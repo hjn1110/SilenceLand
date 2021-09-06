@@ -14,7 +14,8 @@ public class PathNods : MonoBehaviour
     public int pathTag;
     public TurnMode turnMode;
 
-    private void OnDrawGizmosSelected()
+    //private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
         if (nextNods != null)
         {
