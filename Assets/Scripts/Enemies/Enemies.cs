@@ -44,6 +44,17 @@ public abstract class Enemies : MonoBehaviour
     private int hitNum;
     private RaycastHit2D[] hits;
 
+    //寻路代理
+    private NavMeshAgent agent;
+
+    //路径属性
+    //public PathList path;//挂载和当前AI匹配的路径
+    private Vector3 thePatrolTarget;//巡逻指向的下一个路线目标
+    //是否抵达当前路线目标
+
+
+
+
     //-------------------------------------------------------------------------
 
     //初始化
@@ -90,10 +101,28 @@ public abstract class Enemies : MonoBehaviour
     //碰撞相关
     protected abstract void AddRigid();
 
+    //-------------------------------------------------------------------------
+    //沿路径Patrol相关
+
+    public void SetNextTarget(PathNods nod)
+    {
+        Debug.Log("抵达目标，切换下个目标");
+        thePatrolTarget = nod.nextNods.transform.position;
+    }
+    //LostPlayer、LostTarget后，返回巡逻状态，先调用该方法搜索距离自己最近的nod作为目标
+    // *具体方法待实现
+    Vector2 SearchNextTarget()
+    {
+        Vector2 target = Vector2.zero;
+        return target;
+        //捕获trigger内的nods
+        //发布搜索方法
+        //搜索对象自行匹配距离，符合匹配的将自己推送过来
+        //需扩写搜索对象方法，使之可以根据和对象的距离进行匹配
+    }
 
     //-------------------------------------------------------------------------
     //寻路相关
-    NavMeshAgent agent;
     protected void AddNavMeshAgent()
     {
         agent = gameObject.AddComponent<NavMeshAgent>();
@@ -130,6 +159,18 @@ public abstract class Enemies : MonoBehaviour
         beginGoto();
         continuelyGoto(theSeekTarget);
     }
+    public void Patrol()
+    {
+        beginGoto();
+        continuelyGoto(thePatrolTarget);
+    }
+    public void BackToPatrol()
+    {
+        beginGoto();
+        SearchNextTarget();
+        continuelyGoto(thePatrolTarget);
+    }
+
     public void Stop()
     {
         agent.isStopped = true;
@@ -253,13 +294,13 @@ public abstract class Enemies : MonoBehaviour
         //加载初始视野Trigger
         
         //if (TriggerCreater.instance == null) { Debug.Log("trigger==null"); }
-        GameObject ViewField = TriggerCreater.instance.AddTrigger(vision, transform, "ViewField");
+        GameObject ViewField = TriggerCreater.instance.AddTriggerObject(vision, transform, "ViewField");
         ViewField.AddComponent<ViewField>();
 
 
         //加载逃逸视野Trigger
 
-        GameObject FleeField = TriggerCreater.instance.AddTrigger(fleeVision, transform, "FleeField");
+        GameObject FleeField = TriggerCreater.instance.AddTriggerObject(fleeVision, transform, "FleeField");
         FleeField.AddComponent<FleeField>();
 
     }

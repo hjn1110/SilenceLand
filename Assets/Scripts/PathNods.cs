@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum TurnMode
 {
-    Loop,
+    FollowTag,
     Random,
 }
 
@@ -13,8 +13,9 @@ public class PathNods : MonoBehaviour
     public GameObject nextNods;
     public int pathTag;
     public TurnMode turnMode;
+    public float delay;
+    private TriggerCreater triggerCreater;
 
-    //private void OnDrawGizmosSelected()
     private void OnDrawGizmos()
     {
         if (nextNods != null)
@@ -23,9 +24,20 @@ public class PathNods : MonoBehaviour
 
         }
     }
+    private void Start()
+    {
+        Debug.Log("创建Trigger");
+        triggerCreater = TriggerCreater.instance;
+        triggerCreater.AddTriggerComponent(gameObject, 1.2f);
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Enemy"))
+        {
+            collision.GetComponent<Enemies>().SetNextTarget(this);
+        }
+    }
+     
 
 
-
-
-        
 }

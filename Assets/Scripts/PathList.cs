@@ -6,42 +6,41 @@ using UnityEditor;
 #endif
 public class PathList : MonoBehaviour
 {
-    static int id;
+    public static int num { set; get; }
+    [HideInInspector]
+    public int id { set; get; }
     public int NodsNum = 2;
     private List<PathNods> nods;
+ 
+    //初始化
     private void Awake()
     {
-        id++;
+        num++;
+        id = num;
     }
+     
+    //------------------------------------------------------------------------------
+    //以下为创建path相关的私有方法集，由公共方法组合调用
 
-    public void AddNods()
+    //创建nod
+    private GameObject Add(int i)
     {
-        DeleteAll();
-        int num = NodsNum;
-        nods = new List<PathNods>(num);
-        for(int i = 0; i < num; i++)
-        {
-            Add(i);
-
-
-        }
-        for(int i = 0; i < num; i++)
-        {
-            if (i != num - 1)
-            {
-                nods[i].nextNods = nods[i + 1].gameObject;
-            }
-        }
-        
+        GameObject nodObject = new GameObject("Nod_" + i);
+        nodObject.transform.parent = gameObject.transform;
+        PathNods nod = nodObject.AddComponent<PathNods>();
+        nods.Add(nod);
+        nod.transform.position = Place(i);
+        return nod.gameObject;
     }
 
-    Vector2 Place(int i)
+    //放置nods，使新创建的nod与既有的离散，便于可视化，避免视觉上发生重叠
+    private Vector2 Place(int i)
     {
         float x = 0;
-        float y= 0;
-        if (i  == 0)
+        float y = 0;
+        if (i == 0)
         {
-            x = 0;y = 1;
+            x = 0; y = 1;
         }
         else
         {
@@ -64,44 +63,13 @@ public class PathList : MonoBehaviour
             }
         }
         return new Vector2(x, y);
-        
-
     }
 
-
-    GameObject Add(int i)
-    {
-        GameObject nodObject = new GameObject("Nod_" + i);
-        nodObject.transform.parent = gameObject.transform;
-        PathNods nod = nodObject.AddComponent<PathNods>();
-        nods.Add(nod);
-        nod.transform.position=Place(i);
-        return nod.gameObject;
-    }
-
-
-    public void AddOne()
-    {
-        Open();
-        NodsNum = nods.Count+1;
-        int i = nods.Count;
-        GameObject nod = Add(i);
-        if (i - 1 >= 0)
-        {
-            nods[i - 1].nextNods = nod.gameObject;
-
-        }
-    }
-    public void Clear()
-    {
-        DeleteAll();
-        NodsNum = 2;
-
-    }
-    public void DeleteAll()
+    //清除所有nods
+    private void DeleteAll()
     {
         float childCount = transform.childCount;
-        Debug.Log("childCount="+childCount);
+        Debug.Log("childCount=" + childCount);
 
         while (childCount != 0)
         {
@@ -113,10 +81,52 @@ public class PathList : MonoBehaviour
             childCount = transform.childCount;
         }
         nods = new List<PathNods>(NodsNum);
-       
+    }
+
+    //------------------------------------------------------------------------------
+    //以下为创建path相关的公共方法集，由编辑器类调用
+
+    //根据给定nodsNum批量创建nods，并初始化路径关系
+    public void AddNods()
+    {
+        DeleteAll();
+        int num = NodsNum;
+        nods = new List<PathNods>(num);
+        for(int i = 0; i < num; i++)
+        {
+            Add(i);
+        }
+        for(int i = 0; i < num; i++)
+        {
+            if (i != num - 1)
+            {
+                nods[i].nextNods = nods[i + 1].gameObject;
+            }
+        }
+    }
+
+    //创建一个nod，并初始化路径关系
+    public void AddOne()
+    {
+        Open();
+        NodsNum = nods.Count+1;
+        int i = nods.Count;
+        GameObject nod = Add(i);
+        if (i - 1 >= 0)
+        {
+            nods[i - 1].nextNods = nod.gameObject;
+        }
+    }
+
+    //清除所有nods，并初始化nodsNum
+    public void Clear()
+    {
+        DeleteAll();
+        NodsNum = 2;
 
     }
 
+    //打开当前path路径
     public void Open()
     {
         int childCount = transform.childCount;
@@ -124,12 +134,10 @@ public class PathList : MonoBehaviour
         {
             nods[childCount - 1].nextNods = null;
             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-
         }
-
-
     }
 
+    //闭合当前path路径
     public void Close()
     {
         int childCount = transform.childCount;
@@ -144,6 +152,7 @@ public class PathList : MonoBehaviour
 
     }
 
+    //裁剪当前path路径，将nods删至NodsNum的数量
     public void Delete()
     {
         int childCount = transform.childCount;
@@ -164,6 +173,10 @@ public class PathList : MonoBehaviour
     }
 
 }
+
+//------------------------------------------------------------------------------
+//以下为编辑器类的重写，调用公共方法集，实现GUI面板上的按钮事件
+
 #if UNITY_EDITOR
 [CustomEditor(typeof(PathList))]
 public class PathBuilderEditor : Editor

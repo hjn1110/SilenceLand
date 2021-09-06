@@ -119,7 +119,7 @@ public class SoundSpread : MonoBehaviour
     void AddTrigger()
     {
 
-        GameObject hearField = TriggerCreater.instance.AddTrigger(r, transform, "HearField");
+        GameObject hearField = TriggerCreater.instance.AddTriggerObject(r, transform, "HearField");
         hearField.AddComponent<SoundField>();
 
     }
