@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed99dd589e80341a4b9dd2360a541cad, type: 3}
+  m_Name: W1L1TextSetting
+  m_EditorClassIdentifier: 
+  ifInitWhenAwake: 0
+  AwakeID: 0
+  Paragraphs:
+  - sentencs:
+    - speaker: 1
+      text: "\u4E0E\u5F15\u529B\u573A\u540C\u8C03\u5B8C\u6BD5\u3002\u81EA\u9A71\u5F15\u64CE\u5207\u624B\u52A8\u3002"
+      endType: 1
+    - speaker: 2
+      text: "\u6309\u4E0A\u4E0B\u952E\u52A0\u51CF\u901F"
+      endType: 3
+    - speaker: 1
+      text: "\u5F53\u524D\u8981\u585E\u5728\u540D\u5F55\u4E2D\u627E\u4E0D\u5230\u76F8\u5173\u4FE1\u606F\uFF0C\u8BF7\u5C0F\u5FC3\u884C\u4E8B\u3002"
+      endType: 1
+    - speaker: 1
+      text: "\u6C42\u6551\u4FE1\u53F7\u65B9\u4F4D\u5DF2\u66F4\u65B0\u3002"
+      endType: 1
+  - sentencs:
+    - speaker: 5
+      text: "\u6B64\u8DEF\u4E0D\u901A\u2026\u7279\u522B\u7684\u5F85\u5BA2\u4E4B\u9053\u3002"
+      endType: 1
+  - sentencs:
+    - speaker: 5
+      text: "\u8FD9\u5C31\u662F\u628A\u6211\u4EEC\u5E26\u5230\u8FD9\u513F\u7684\u4FE1\u53F7\u6E90\uFF1F "
+      endType: 1
+    - speaker: 5
+      text: "\u4E00\u4E2A[\u65F6\u9AB8]\uFF0C\u5BF9\u6B64\u6211\u6709\u4EC0\u4E48\u9700\u8981\u4E86\u89E3\u7684\u5417\uFF1F"
+      endType: 1
+    - speaker: 1
+      text: "[\u65F6\u9AB8]\u76F8\u5173\u8BCD\u6761\u5DF2\u66F4\u65B0\u3002"
+      endType: 1
+    - speaker: 0
+      text: "\u6309Tab\u952E\u67E5\u770B\u3002"
+      endType: 1
+    - speaker: 5
+      text: "\u4FE1\u53F7\u6D88\u5931\u4E86\u3002\u4F46\u770B\u6837\u5B50\u4E0D\u4F1A\u90A3\u4E48\u7B80\u5355\u3002"
+      endType: 1
+  - sentencs:
+    - speaker: 1
+      text: "\u4E00\u9053\u505C\u8FD0\u7684\u661F\u95E8\uFF0C\u6CA1\u6709\u901A\u7535\u7684\u75D5\u8FF9\u3002"
+      endType: 1
+  - sentencs:
+    - speaker: 1
+      text: "\u78E8\u574A\u5F0F\u4F9B\u7535\u5668\uFF0C\u65E7\u6587\u660E\u7684\u9057\u7559\u4EA7\u7269\u3002"
+      endType: 1
+  - sentencs:
+    - speaker: 1
+      text: "\u4FE1\u53F7\u6062\u590D\u4E86\uFF0C\u5C31\u6765\u81EA\u95E8\u7684\u53E6\u4E00\u8FB9\u3002"
+      endType: 1
+    - speaker: 5
+      text: "\u4E09\u4E2A\u63D2\u69FD\u3002\u770B\u6837\u5B50\u8FD8\u5F97\u81EA\u98DF\u5176\u529B\u3002"
+      endType: 1

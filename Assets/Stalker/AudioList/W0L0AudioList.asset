@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56ce1467b5264400b95d5ace1c9de7a3, type: 3}
+  m_Name: W0L0AudioList
+  m_EditorClassIdentifier: 
+  BGM:
+  - audio: {fileID: 3924657709977874548, guid: 208972823881b47adabc4f77ce2adc69, type: 3}
+    name: BGM1
+  BGS:
+  - audio: {fileID: 8524416856877989997, guid: 831e79b952e3c4c94afb82b48565a6f3, type: 3}
+    name: BGS1
+  SE:
+  - audio: {fileID: 7300471364713173437, guid: e12b4d550a2c74d488dfc41ca3b24a9e, type: 3}
+    name: SE1
+  - audio: {fileID: 7300471364713173437, guid: afed1cc532add48f7b0ba74ec91c5d0b, type: 3}
+    name: SE0
+  - audio: {fileID: 7300471364713173437, guid: 33cd749e2bde240319c74af5b580c37e, type: 3}
+    name: SE2
+  - audio: {fileID: 7300471364713173437, guid: e27598263cf424105b3a561e23873eb4, type: 3}
+    name: Select
+  - audio: {fileID: 7838093335407645864, guid: e66e32375769747d9b8b46eba0c2c4fd, type: 3}
+    name: Confirm
+  ME: []
