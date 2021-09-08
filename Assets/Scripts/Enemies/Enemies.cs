@@ -124,7 +124,11 @@ public abstract class Enemies : MonoBehaviour
     public void SetNextTarget(PathNods nod)
     {
         Debug.Log("抵达目标，切换下个目标");
-        thePatrolTarget = nod.nextNods.transform.position;
+        if (nod.nextNods != null)
+        {
+            thePatrolTarget = nod.nextNods.transform.position;
+
+        }
     }
 
     //工具方法，返回一个List中距离自己最近的nod
@@ -181,7 +185,7 @@ public abstract class Enemies : MonoBehaviour
     {
         if (manager.AllNods == null)
         {
-            Debug.LogError("AllNods为空");
+            Debug.LogError("AllNods为空");    
         }
         Debug.Log("初始化Patrol最近目标");
         thePatrolTarget = theClosestNodOfList(manager.AllNods).transform.position;

@@ -12,7 +12,9 @@ public class PathList : MonoBehaviour
 
     public int NodsNum = 2;
     //[SerializeField]
-    private List<PathNods> nods;
+    //[HideInInspector]
+    [ReadOnly]
+    public List<PathNods> nods;
     //public static List<PathList> AllPaths;
 
     public PathsManager manager;
@@ -88,6 +90,7 @@ public class PathList : MonoBehaviour
             for (int i = 0; i < nods.Count; i++)
             {
                 DestroyImmediate(nods[i].gameObject);
+                manager.AllNods.Remove(nods[i]);
             }
 
             nods = new List<PathNods>(NodsNum);
@@ -102,6 +105,25 @@ public class PathList : MonoBehaviour
 
     }
 
+    private void CreatAll()
+    {
+        DeleteAll();
+        int num = NodsNum;
+        nods = new List<PathNods>(num);
+        for (int i = 0; i < num; i++)
+        {
+            Add(i);
+        }
+        for (int i = 0; i < num; i++)
+        {
+            if (i != num - 1)
+            {
+                nods[i].nextNods = nods[i + 1].gameObject;
+            }
+        }
+        Close();
+    }
+
     //二次确认
     private bool ConfirmToDelete()
     {
@@ -111,6 +133,10 @@ public class PathList : MonoBehaviour
     {
         return UnityEditor.EditorUtility.DisplayDialog("确认新建", "新建行为会覆盖当前已创建的所有nods。此操作行为不可撤销。", "确认", "取消");
     }
+    private bool WarnOutOfIndex()
+    {
+        return UnityEditor.EditorUtility.DisplayDialog("输入错误", "输入的数值超出边界，请重新检查", "确认", "取消");
+    }
 
     //------------------------------------------------------------------------------
     //以下为创建nods相关的公共方法集，由编辑器类调用
@@ -118,23 +144,19 @@ public class PathList : MonoBehaviour
     //根据给定nodsNum批量创建nods，并初始化路径关系
     public void AddNods()
     {
-        if (ConfirmToNew())
+        //若当前存在可能被覆盖的nods，则二次确认提示，否则不提示直接创建
+        if ((nods!=null)&&(nods.Count != 0))
         {
-            DeleteAll();
-            int num = NodsNum;
-            nods = new List<PathNods>(num);
-            for (int i = 0; i < num; i++)
+            if (ConfirmToNew())
             {
-                Add(i);
-            }
-            for (int i = 0; i < num; i++)
-            {
-                if (i != num - 1)
-                {
-                    nods[i].nextNods = nods[i + 1].gameObject;
-                }
+                CreatAll();
             }
         }
+        else
+        {
+            CreatAll();
+        }
+        
 
         
     }
@@ -154,6 +176,7 @@ public class PathList : MonoBehaviour
         {
             nods[i - 1].nextNods = nod.gameObject;
         }
+        Close();
     }
 
     //清除所有nods，并初始化nodsNum
@@ -197,21 +220,47 @@ public class PathList : MonoBehaviour
     //裁剪当前path路径，将nods删至NodsNum的数量
     public void Delete()
     {
-        int childCount = transform.childCount;
-        Debug.Log("childCount=" + childCount);
-
-        while (childCount != NodsNum)
+        if ((nods != null) && (nods.Count != 0))
         {
-            for(int i= transform.childCount; i>NodsNum;i--)
+            if (NodsNum < nods.Count)
             {
-                Transform child = transform.GetChild(i-1);
-                Debug.Log("销毁:" + child.gameObject.name);
-                DestroyImmediate(child.gameObject);
+                //int childCount = transform.childCount;
+                //Debug.Log("childCount=" + childCount);
+
+                for (int i = NodsNum; i < nods.Count ; i++)
+                {
+                    
+                    DestroyImmediate(nods[i].gameObject);
+                    //nods.Remove(nods[i]);
+                    manager.AllNods.Remove(nods[i]);
+
+
+                }
+
+                manager.RemoveAllNullInAllNodsList(nods);
+                //manager.RemoveAllNullInAllNodsList(manager.AllNods);
+
+                //childCount = transform.childCount;
+                //NodsNum = childCount;
+
+                NodsNum = nods.Count;
+
+                //nods = nods.GetRange(0, childCount);
+                Close();
+                
             }
-            childCount = transform.childCount;
+            else
+            {
+                WarnOutOfIndex();
+            }
+
         }
-        NodsNum = childCount;
-        nods = nods.GetRange(0,childCount);
+        else
+        {
+            WarnOutOfIndex();
+
+        }
+
     }
 
 }

@@ -15,7 +15,8 @@ MonoBehaviour:
   _hearing: 0.03
   _vision: 10
   _fleeVision: 20
+  _patrolVision: 10
   _maxHp: 10
   _moveSpeed: 0.5
-  _angleSpeed: 10
+  _angleSpeed: 400
   _hearingReduceSpeed: 0.01
