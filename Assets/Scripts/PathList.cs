@@ -6,21 +6,25 @@ using UnityEditor;
 #endif
 public class PathList : MonoBehaviour
 {
-    public static int num { set; get; }
+    //public static int num { set; get; }
     [HideInInspector]
-    public int id { set; get; }
+    public int id;
+
     public int NodsNum = 2;
+    //[SerializeField]
     private List<PathNods> nods;
- 
-    //初始化
-    private void Awake()
-    {
-        num++;
-        id = num;
-    }
+    //public static List<PathList> AllPaths;
+
+    public PathsManager manager;
+
      
+
+
+
+
+    //NODS
     //------------------------------------------------------------------------------
-    //以下为创建path相关的私有方法集，由公共方法组合调用
+    //以下为创建nods相关的私有方法集，由公共方法组合调用
 
     //创建nod
     private GameObject Add(int i)
@@ -29,6 +33,17 @@ public class PathList : MonoBehaviour
         nodObject.transform.parent = gameObject.transform;
         PathNods nod = nodObject.AddComponent<PathNods>();
         nods.Add(nod);
+        if ((manager.AllNods==null)||(manager.AllNods.Count == 0))
+        {
+            manager.AllNods = new List<PathNods>();
+        }
+        else
+        {
+            Debug.Log("manager.AllNods为空");
+        }
+        manager.AllNods.Add(nod);
+        Debug.Log("AddAllNods:"+ manager.AllNods.Count);
+
         nod.transform.position = Place(i);
         return nod.gameObject;
     }
@@ -36,8 +51,8 @@ public class PathList : MonoBehaviour
     //放置nods，使新创建的nod与既有的离散，便于可视化，避免视觉上发生重叠
     private Vector2 Place(int i)
     {
-        float x = 0;
-        float y = 0;
+        float x;
+        float y;
         if (i == 0)
         {
             x = 0; y = 1;
@@ -68,47 +83,70 @@ public class PathList : MonoBehaviour
     //清除所有nods
     private void DeleteAll()
     {
-        float childCount = transform.childCount;
-        Debug.Log("childCount=" + childCount);
-
-        while (childCount != 0)
+        if ((nods != null) && (nods.Count != 0))
         {
-            foreach (Transform child in transform)
+            for (int i = 0; i < nods.Count; i++)
             {
-                Debug.Log("销毁:" + child.name);
-                DestroyImmediate(child.gameObject);
+                DestroyImmediate(nods[i].gameObject);
             }
-            childCount = transform.childCount;
+
+            nods = new List<PathNods>(NodsNum);
+            Debug.Log("已清空");
+
         }
-        nods = new List<PathNods>(NodsNum);
+        else
+        {
+            Debug.Log("待删除列表为空！");
+
+        }
+
+    }
+
+    //二次确认
+    private bool ConfirmToDelete()
+    {
+        return UnityEditor.EditorUtility.DisplayDialog("确认删除", "是否要清空当前path下所有nods？此操作行为不可撤销。", "确认", "取消");
+    }
+    private bool ConfirmToNew()
+    {
+        return UnityEditor.EditorUtility.DisplayDialog("确认新建", "新建行为会覆盖当前已创建的所有nods。此操作行为不可撤销。", "确认", "取消");
     }
 
     //------------------------------------------------------------------------------
-    //以下为创建path相关的公共方法集，由编辑器类调用
+    //以下为创建nods相关的公共方法集，由编辑器类调用
 
     //根据给定nodsNum批量创建nods，并初始化路径关系
     public void AddNods()
     {
-        DeleteAll();
-        int num = NodsNum;
-        nods = new List<PathNods>(num);
-        for(int i = 0; i < num; i++)
+        if (ConfirmToNew())
         {
-            Add(i);
-        }
-        for(int i = 0; i < num; i++)
-        {
-            if (i != num - 1)
+            DeleteAll();
+            int num = NodsNum;
+            nods = new List<PathNods>(num);
+            for (int i = 0; i < num; i++)
             {
-                nods[i].nextNods = nods[i + 1].gameObject;
+                Add(i);
+            }
+            for (int i = 0; i < num; i++)
+            {
+                if (i != num - 1)
+                {
+                    nods[i].nextNods = nods[i + 1].gameObject;
+                }
             }
         }
+
+        
     }
 
     //创建一个nod，并初始化路径关系
     public void AddOne()
     {
         Open();
+        if ((nods == null) || (nods.Count == 0))
+        {
+            nods = new List<PathNods>();
+        }
         NodsNum = nods.Count+1;
         int i = nods.Count;
         GameObject nod = Add(i);
@@ -121,8 +159,12 @@ public class PathList : MonoBehaviour
     //清除所有nods，并初始化nodsNum
     public void Clear()
     {
-        DeleteAll();
-        NodsNum = 2;
+        if (ConfirmToDelete())
+        {
+            DeleteAll();
+            NodsNum = 2;
+
+        }
 
     }
 
@@ -179,7 +221,7 @@ public class PathList : MonoBehaviour
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(PathList))]
-public class PathBuilderEditor : Editor
+public class PathNodsBuilderEditor : Editor
 {
     public override void OnInspectorGUI()
     {

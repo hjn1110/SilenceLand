@@ -36,6 +36,7 @@ public class ZombieSeekState : FSMState
         if ((!enemy.GetComponent<Zombie>().SeePlayer) && (!enemy.GetComponent<Zombie>().hearAnything))
         {
             //Debug.Log("丢弃声源");
+            enemy.GetComponent<Zombie>().BackToPatrol();
             fsm.PerformTransition(Transition.LostHear);
         }
 

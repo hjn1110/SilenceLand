@@ -18,7 +18,7 @@ public class ZombiePatrolState : FSMState
     public override void Act(GameObject enemy)
     {
         enemy.GetComponent<SpriteRenderer>().color = new Color(0, 1, 0, 1);
-        enemy.GetComponent<Zombie>().Stop();
+        enemy.GetComponent<Zombie>().Patrol();
 
     }
 

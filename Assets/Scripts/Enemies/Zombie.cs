@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class Zombie : Enemies
 {
-    //指定默认状态
-    public StateID currentState = StateID.Pend;
+    
     //指定当前Enemy类型的参数配置
     protected override EnemySetting setting { get { return globalSetting.zombieSetting; } }
 
 
+    
 
     //注册状态机
     protected override void initFSM()
     {
-        Debug.Log("Zombie初始化状态机" + gameObject.name);
+        //Debug.Log("Zombie初始化状态机" + gameObject.name);
         fsm = new FSMSystem();
 
         //Pend的情况下
@@ -54,11 +54,11 @@ public class Zombie : Enemies
         fsm.AddState(followState);
         fsm.AddState(patrolState);
 
-        if(currentState == StateID.Patrol)
+        if(defaultState == StateID.Patrol)
         {
             fsm.currentFSMState = patrolState;
         }
-        if (currentState == StateID.Pend)
+        if (defaultState == StateID.Pend)
         {
             fsm.currentFSMState = pendState;
         }

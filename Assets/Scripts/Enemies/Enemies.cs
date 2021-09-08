@@ -8,8 +8,9 @@ public abstract class Enemies : MonoBehaviour
 {
     //可配置属性 
     protected float hearing { get { return setting._hearing; } }//听力
-    protected float vision { get { return setting._vision; } set { vision = setting._vision; } }//视力
-    protected float fleeVision { get { return setting._fleeVision; } set { fleeVision = setting._fleeVision; } }//逃逸视力
+    protected float vision { get { return setting._vision; }  }//视力
+    protected float fleeVision { get { return setting._fleeVision; } }//逃逸视力
+    protected float patrolVision { get { return setting._patrolVision; }}
     protected float hp { get { return setting._maxHp; } set { hp = setting._maxHp; } }//血量
     protected float moveSpeed { get { return setting._moveSpeed; } set { moveSpeed = setting._moveSpeed; } }//移动速度
     protected float angleSpeed { get { return setting._angleSpeed; } set { angleSpeed = setting._angleSpeed; } }//转身速度
@@ -49,10 +50,19 @@ public abstract class Enemies : MonoBehaviour
 
     //路径属性
     //public PathList path;//挂载和当前AI匹配的路径
+    [SerializeField]
     private Vector3 thePatrolTarget;//巡逻指向的下一个路线目标
-    //是否抵达当前路线目标
+    //[HideInInspector]
+    public LinkedList<PathNods> NodsInView;//用于存储当前视野中的nods
+    //[HideInInspector]
+    public PathNods theLastNodInView;//用于存储最近一次看到的且已不在NodsInView中的nod
+
+    //指定默认状态
+    public StateID defaultState = StateID.Pend;
+    public StateID currentState;
 
 
+    private PathsManager manager;
 
 
     //-------------------------------------------------------------------------
@@ -62,7 +72,7 @@ public abstract class Enemies : MonoBehaviour
     {
         soundSourceList = new Dictionary<Vector3, float>();
         followTargetList = new List<Transform>();
-
+        NodsInView = new LinkedList<PathNods>();
         //用于订阅搜索事件
         gameObject.AddComponent<SubscribeSearch>();
     }
@@ -71,13 +81,18 @@ public abstract class Enemies : MonoBehaviour
         AddRigid();
         global = Global.instance;
         globalSetting = GlobalSettings.instance;
+        manager = PathsManager.instance;
         InitRayCast();
         AddTrigger();
         initFSM();
         AddNavMeshAgent();
+        initClosestTarget();
 
 
     }
+
+
+ 
 
     //主循环
     private void Update()
@@ -86,8 +101,10 @@ public abstract class Enemies : MonoBehaviour
         {
             //状态机更新
             fsm.Update(gameObject);
-            print(gameObject.name+"当前的状态是：" + fsm.currentFSMState);
-            print("seekTarget="+theSeekTarget);
+            currentState = fsm.currentFSMState.ID;
+
+            //print(gameObject.name+"当前的状态是：" + fsm.currentFSMState);
+            //print("seekTarget="+theSeekTarget);
             //音量记忆衰减
             HearingReduce();
             //根据音量记忆排序，确定搜寻对象
@@ -102,24 +119,106 @@ public abstract class Enemies : MonoBehaviour
     protected abstract void AddRigid();
 
     //-------------------------------------------------------------------------
-    //沿路径Patrol相关
+    //Path Patrol相关
 
     public void SetNextTarget(PathNods nod)
     {
         Debug.Log("抵达目标，切换下个目标");
         thePatrolTarget = nod.nextNods.transform.position;
     }
-    //LostPlayer、LostTarget后，返回巡逻状态，先调用该方法搜索距离自己最近的nod作为目标
-    // *具体方法待实现
-    Vector2 SearchNextTarget()
+
+    //工具方法，返回一个List中距离自己最近的nod
+    //待优化：用坐标平方之和代替Vector2.Distance进行比较，减少平方根计算
+    //待优化：成员用gameobject代替类，这样可以把距离比较的方法封装成一个通用的
+    private PathNods theClosestNodOfList(List<PathNods> nods)
     {
-        Vector2 target = Vector2.zero;
+        float dis = Mathf.Infinity;
+        PathNods target = null;
+        if ((nods != null) && (nods.Count != 0))
+        {
+            Debug.Log("nods.Count="+ nods.Count);
+            for (int i = 0; i < nods.Count; i++)
+            {
+                float _dis = Vector2.Distance(nods[i].transform.position, gameObject.transform.position);
+                if (_dis < dis)
+                {
+                    dis = _dis;
+                    target = nods[i];
+                }
+            }
+        }
+        else
+        {
+            Debug.Log("nods为空");
+        }
+        
+
         return target;
-        //捕获trigger内的nods
-        //发布搜索方法
-        //搜索对象自行匹配距离，符合匹配的将自己推送过来
-        //需扩写搜索对象方法，使之可以根据和对象的距离进行匹配
+
     }
+    //工具方法，返回一个List中距离自己最近的nod
+    //待优化：用坐标平方之和代替Vector2.Distance进行比较，减少平方根计算
+    //待优化：成员用gameobject代替类，这样可以把距离比较的方法封装成一个通用的
+    private PathNods theClosestNodOfLinkedList(LinkedList<PathNods> nods)
+    {
+        float dis = Mathf.Infinity;
+        PathNods target = null;
+        foreach (PathNods nod in nods)
+        {
+            float _dis = Vector2.Distance(nod.transform.position, gameObject.transform.position);
+            if (_dis < dis)
+            {
+                dis = _dis;
+                target = nod;
+            }
+        }
+
+        return target;
+
+    }
+    
+    public void initClosestTarget()
+    {
+        if (manager.AllNods == null)
+        {
+            Debug.LogError("AllNods为空");
+        }
+        Debug.Log("初始化Patrol最近目标");
+        thePatrolTarget = theClosestNodOfList(manager.AllNods).transform.position;
+    }
+    
+
+    //LostPlayer、LostTarget后，返回巡逻状态，先调用该方法搜索距离自己最近的nod作为目标
+    public void SearchClosestTarget()
+    {
+       
+        if ((NodsInView != null)&&(NodsInView.Count!=0))
+        {
+            //Debug.Log("执行算法1:视野中存在目标，前往:"+ theClosestNodOfLinkedList(NodsInView).gameObject.name);
+            thePatrolTarget = theClosestNodOfLinkedList(NodsInView).transform.position;
+        }
+        else
+        if (theLastNodInView != null)
+        {
+            //Debug.Log("执行算法2:上一次视野中记录过目标，前往:" + theLastNodInView.gameObject.name);
+            thePatrolTarget = theLastNodInView.transform.position;
+        }
+        else
+        if (thePatrolTarget != Vector3.zero)
+        {
+            //Debug.Log("执行算法3:上一次巡逻过的目标非空，前往:" + thePatrolTarget);
+        }
+        else
+        if((manager.AllNods!=null)&&(manager.AllNods.Count!=0))
+        {
+            thePatrolTarget = theClosestNodOfList(manager.AllNods).transform.position;
+            //Debug.Log("执行算法4:搜索全体nods中最近点，前往:" + theClosestNodOfList(PathNods.AllNods).gameObject.name);
+
+        }
+
+    }
+
+
 
     //-------------------------------------------------------------------------
     //寻路相关
@@ -152,7 +251,10 @@ public abstract class Enemies : MonoBehaviour
     public void Follow()
     {
         beginGoto();
-        continuelyGoto(theFollowTarget.position);
+        if (theFollowTarget != null)
+        {
+            continuelyGoto(theFollowTarget.position);
+        }
     }
     public void Seek()
     {
@@ -167,7 +269,7 @@ public abstract class Enemies : MonoBehaviour
     public void BackToPatrol()
     {
         beginGoto();
-        SearchNextTarget();
+        SearchClosestTarget();
         continuelyGoto(thePatrolTarget);
     }
 
@@ -303,6 +405,9 @@ public abstract class Enemies : MonoBehaviour
         GameObject FleeField = TriggerCreater.instance.AddTriggerObject(fleeVision, transform, "FleeField");
         FleeField.AddComponent<FleeField>();
 
+        //加载Patrol搜寻path视野Trigger
+        GameObject PatrolViewField = TriggerCreater.instance.AddTriggerObject(patrolVision, transform, "PatrolField");
+        PatrolViewField.AddComponent<PatrolField>();
     }
 
     //用于被ViewTrigger调用，将进入Enemy视野的对象添加到视觉list

@@ -29,9 +29,9 @@ public class Global : MonoBehaviour
 
     private void Start()
     {
-        GameObject[] objects;
-        bool ifHas=  sgo.Search(1, 1, out objects);
-        Debug.Log("指定坐标是否存在对象：" + ifHas);
+        //GameObject[] objects;
+        //bool ifHas=  sgo.Search(1, 1, out objects);
+        //Debug.Log("指定坐标是否存在对象：" + ifHas);
     }
 
 

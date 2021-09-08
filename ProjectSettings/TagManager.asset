@@ -34,6 +34,7 @@ TagManager:
   - KillerFlow
   - Ray
   - Wall
+  - PathNod
   layers:
   - Default
   - TransparentFX

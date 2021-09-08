@@ -16,6 +16,7 @@ public class PathNods : MonoBehaviour
     public float delay;
     private TriggerCreater triggerCreater;
 
+
     private void OnDrawGizmos()
     {
         if (nextNods != null)
@@ -26,7 +27,8 @@ public class PathNods : MonoBehaviour
     }
     private void Start()
     {
-        Debug.Log("创建Trigger");
+        //Debug.Log("创建Trigger");
+        gameObject.tag = "PathNod";
         triggerCreater = TriggerCreater.instance;
         triggerCreater.AddTriggerComponent(gameObject, 1.2f);
     }

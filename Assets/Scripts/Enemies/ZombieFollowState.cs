@@ -29,6 +29,7 @@ public class ZombieFollowState : FSMState
         if ((enemy.GetComponent<Zombie>().LostPlayer))
         {
             //Debug.Log("丢弃声源");
+            enemy.GetComponent<Zombie>().BackToPatrol();
             fsm.PerformTransition(Transition.LostPlayer);
         }
 
