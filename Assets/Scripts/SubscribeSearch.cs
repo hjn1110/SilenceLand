@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Silent.GameSystem.SearchObject;
 
+/// <summary>
+/// 扩展自：https://github.com/Bozar/AxeMan/blob/master/Assets/Scripts/SubscribeSearch.cs
+/// 作者：Bozar
+/// </summary>
 namespace Silent.MapObject.SearchObject
 {
     //订阅搜索事件

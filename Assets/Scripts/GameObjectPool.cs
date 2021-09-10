@@ -24,7 +24,7 @@ public class GameObjectPool : MonoBehaviour
 
 
     //由manager调用
-    public void InitPool(string objPoolName,Transform objTransform)
+    public virtual void InitPool(string objPoolName,Transform objTransform)
     {
         manager = GameObjectPoolManager.instance;
         instanceParentTrans = manager.instanceContent.transform;

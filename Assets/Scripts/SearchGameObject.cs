@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-
+/// <summary>
+/// 扩展自：https://github.com/Bozar/AxeMan/blob/master/Assets/Scripts/SearchObject.cs
+/// 作者：Bozar
+/// </summary>
 namespace Silent.GameSystem.SearchObject
 {
     //接口类型声明
