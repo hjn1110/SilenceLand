@@ -1,32 +1,62 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+
 public class PathList : MonoBehaviour
 {
-    //public static int num { set; get; }
-    [HideInInspector]
-    public int id;
-
+    //字段声明
     public int NodsNum = 2;
-    //[SerializeField]
-    //[HideInInspector]
     [ReadOnly]
     public List<PathNods> nods;
-    //public static List<PathList> AllPaths;
 
+    //全局变量容器
     public PathsManager manager;
 
-     
-
-
-
-
-    //NODS
     //------------------------------------------------------------------------------
-    //以下为创建nods相关的私有方法集，由公共方法组合调用
+
+    //条件方法集：由PathsEditor调用并关联相应业务操作方法，并在条件触发时调用
+    //满足创建Nods的条件
+    public bool OnAddNods()
+    {
+        //若当前存在可能被覆盖的nods，则二次确认提示，否则不提示直接创建
+        if ((nods != null) && (nods.Count != 0))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    //满足清除nods并初始化nodsNum的条件
+    public bool OnClear()
+    {
+        return true;
+    }
+
+    //满足裁剪当前path路径，将nods删至NodsNum的条件
+    public bool OnDelete()
+    {
+        if ((nods != null) && (nods.Count != 0))
+        {
+            if (NodsNum < nods.Count)
+            {
+                for (int i = NodsNum; i < nods.Count; i++)
+                {
+                    DestroyImmediate(nods[i].gameObject);
+                    manager.AllNods.Remove(nods[i]);
+                }
+
+                manager.RemoveAllNullInAllNodsList(nods);
+                Close();
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    //------------------------------------------------------------------------------
+    //业务操作方法
+    //以下为私有方法集，由公共方法组合调用
 
     //创建nod
     private GameObject Add(int i)
@@ -81,9 +111,12 @@ public class PathList : MonoBehaviour
         }
         return new Vector2(x, y);
     }
+    
+    //------------------------------------------------------------------------------
+    //以下为创建nods相关的公共方法集，由编辑器类调用
 
     //清除所有nods
-    private void DeleteAll()
+    public void DeleteAll()
     {
         if ((nods != null) && (nods.Count != 0))
         {
@@ -95,17 +128,14 @@ public class PathList : MonoBehaviour
 
             nods = new List<PathNods>(NodsNum);
             Debug.Log("已清空");
-
         }
         else
         {
             Debug.Log("待删除列表为空！");
-
         }
-
     }
 
-    private void CreatAll()
+    public void CreatAll()
     {
         DeleteAll();
         int num = NodsNum;
@@ -122,43 +152,6 @@ public class PathList : MonoBehaviour
             }
         }
         Close();
-    }
-
-    //二次确认
-    private bool ConfirmToDelete()
-    {
-        return UnityEditor.EditorUtility.DisplayDialog("确认删除", "是否要清空当前path下所有nods？此操作行为不可撤销。", "确认", "取消");
-    }
-    private bool ConfirmToNew()
-    {
-        return UnityEditor.EditorUtility.DisplayDialog("确认新建", "新建行为会覆盖当前已创建的所有nods。此操作行为不可撤销。", "确认", "取消");
-    }
-    private bool WarnOutOfIndex()
-    {
-        return UnityEditor.EditorUtility.DisplayDialog("输入错误", "输入的数值超出边界，请重新检查", "确认", "取消");
-    }
-
-    //------------------------------------------------------------------------------
-    //以下为创建nods相关的公共方法集，由编辑器类调用
-
-    //根据给定nodsNum批量创建nods，并初始化路径关系
-    public void AddNods()
-    {
-        //若当前存在可能被覆盖的nods，则二次确认提示，否则不提示直接创建
-        if ((nods!=null)&&(nods.Count != 0))
-        {
-            if (ConfirmToNew())
-            {
-                CreatAll();
-            }
-        }
-        else
-        {
-            CreatAll();
-        }
-        
-
-        
     }
 
     //创建一个nod，并初始化路径关系
@@ -179,136 +172,41 @@ public class PathList : MonoBehaviour
         Close();
     }
 
-    //清除所有nods，并初始化nodsNum
     public void Clear()
     {
-        if (ConfirmToDelete())
-        {
-            DeleteAll();
-            NodsNum = 2;
-
-        }
-
+        DeleteAll();
+        NodsNum = 2;
     }
 
     //打开当前path路径
-    public void Open()
+    public bool Open()
     {
         int childCount = transform.childCount;
         if ((childCount>=1)&&(nods[childCount - 1].nextNods != null))
         {
             nods[childCount - 1].nextNods = null;
-            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+            //UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+            //立刻刷新既有对象之间的连线，否则会延迟至少2秒左右刷新，因为OnDraw函数不会每帧刷新
+            //由于调用Editor相关方法，改为在返回true后在Editor类中调用
+            return true;
         }
+        return false;
     }
 
     //闭合当前path路径
-    public void Close()
+    public bool Close()
     {
         int childCount = transform.childCount;
         if (childCount >= 1)
         {
             nods[childCount - 1].nextNods = nods[0].gameObject;
-            //HandleUtility.Repaint();
-            //OnDrawGizmos();
-            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+            //UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
             //立刻刷新既有对象之间的连线，否则会延迟至少2秒左右刷新，因为OnDraw函数不会每帧刷新
+            //由于调用Editor相关方法，改为在返回true后在Editor类中调用
+            return true;
         }
-
-    }
-
-    //裁剪当前path路径，将nods删至NodsNum的数量
-    public void Delete()
-    {
-        if ((nods != null) && (nods.Count != 0))
-        {
-            if (NodsNum < nods.Count)
-            {
-                //int childCount = transform.childCount;
-                //Debug.Log("childCount=" + childCount);
-
-                for (int i = NodsNum; i < nods.Count ; i++)
-                {
-                    
-                    DestroyImmediate(nods[i].gameObject);
-                    //nods.Remove(nods[i]);
-                    manager.AllNods.Remove(nods[i]);
-
-
-                }
-
-                manager.RemoveAllNullInAllNodsList(nods);
-                //manager.RemoveAllNullInAllNodsList(manager.AllNods);
-
-                //childCount = transform.childCount;
-                //NodsNum = childCount;
-
-                NodsNum = nods.Count;
-
-                //nods = nods.GetRange(0, childCount);
-                Close();
-                
-            }
-            else
-            {
-                WarnOutOfIndex();
-            }
-
-        }
-        else
-        {
-            WarnOutOfIndex();
-
-        }
-
-    }
-
-}
-
-//------------------------------------------------------------------------------
-//以下为编辑器类的重写，调用公共方法集，实现GUI面板上的按钮事件
-
-#if UNITY_EDITOR
-[CustomEditor(typeof(PathList))]
-public class PathNodsBuilderEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-        {
-            //DrawDefaultInspector();
-
-            PathList nodsList = (PathList)target;
-
-            if (GUILayout.Button("New"))
-            {
-                
-                nodsList.AddNods();
-            }
-            if (GUILayout.Button("AddOne"))
-            {
-                nodsList.AddOne();
-            }
-            if (GUILayout.Button("DeleteTo"))
-            {
-                nodsList.Delete();
-            }
-            if (GUILayout.Button("Clear"))
-            {
-                nodsList.Clear();
-            }
-            if (GUILayout.Button("Close"))
-            {
-                nodsList.Close();
-            }
-            if (GUILayout.Button("Open"))
-            {
-                nodsList.Open();
-            }
-
-        }
-
+        return false;
     }
 }
-#endif
+
 

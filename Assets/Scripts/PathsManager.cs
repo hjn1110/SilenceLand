@@ -1,62 +1,56 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 public class PathsManager : MonoBehaviour
 {
-    //此类实例必须为单例，待加以限制
-    //[SerializeField]
+    //字段声明
     [ReadOnly]
     public int pathNum=0;
-
-    [SerializeField]
     [ReadOnly]
     public List<PathNods> AllNods;//用于存储全局所有nods
-    [SerializeField]
     [ReadOnly]
     public List<PathList> AllPaths;//用于存储全局所有path
 
-    
+    //单例声明
     #region Singleton
     public static PathsManager instance;
-
-
-    static int numOfSelf;
-
     private void Awake()
     {
         instance = this;
-
     }
     #endregion
-    
 
-
-     
-
-    //PATH
     //------------------------------------------------------------------------------
-    //以下为创建paths相关的私有方法集，由公共方法组合调用
+    //以下为创建paths相关的公共方法集，由编辑器类PathsEditor调用
 
-    private bool ConfirmToDelete()
+    //条件方法集：由PathsEditor调用并关联相应业务操作方法，并在条件触发时调用
+    //满足删除path的条件
+    public bool OnDeleteOne()
     {
-        return  UnityEditor.EditorUtility.DisplayDialog("确认删除","是否要清空所有path？此操作行为不可撤销。","确认","取消");
+        if ((AllPaths != null) && (AllPaths.Count != 0))
+        {
+            return true;
+        }
+        return false;
     }
 
-    private bool ConfirmToDeleteOne()
+    //满足清空所有paths的条件
+    public bool OnClearAllPaths()
     {
-        return UnityEditor.EditorUtility.DisplayDialog("确认删除", "是否要清空最近创建的一个nod？此操作行为不可撤销。", "确认", "取消");
+
+        if ((AllPaths != null) && (AllPaths.Count != 0))
+        {
+            return true;
+
+        }
+        return false;
     }
 
+    //------------------------------------------------------------------------------
 
-
-    //以下为创建paths相关的公共方法集，由编辑器类调用
-
-    //工具方法，用于移除当前allNods中为空的对象
-    //因为destory所有Paths后，paths中包含的所有nods未从allNods中移除
+    //工具方法
+    //移除当前allNods中为空的对象（执行批量destory但未从list中移除的对象）
     public void RemoveAllNullInAllNodsList(List<PathNods> nods)
     {
         if ((nods != null) && (nods.Count != 0))
@@ -76,14 +70,16 @@ public class PathsManager : MonoBehaviour
                     if (nods.Contains(nodsToRemove[i]))
                     {
                         nods.Remove(nodsToRemove[i]);
-
                     }
                 }
             }
         }
-
     }
 
+    //------------------------------------------------------------------------------
+
+    //业务操作方法
+    //新建path
     public void AddPath()
     {
         if (pathNum == 0)
@@ -98,104 +94,30 @@ public class PathsManager : MonoBehaviour
         pathNum++;
 
     }
+
+    //删除最近创建的一个path
     public void DeleteOne()
     {
-        if ((AllPaths != null) && (AllPaths.Count != 0))
-        {
-            if (ConfirmToDeleteOne())
-            {
-                DestroyImmediate(AllPaths[AllPaths.Count - 1].gameObject);
-                AllPaths.Remove(AllPaths[AllPaths.Count - 1]);
-                pathNum--;
-                //AllPaths = AllPaths.GetRange(0, pathNum);
-                RemoveAllNullInAllNodsList(AllNods);
-            }
-        }
+        DestroyImmediate(AllPaths[AllPaths.Count - 1].gameObject);
+        AllPaths.Remove(AllPaths[AllPaths.Count - 1]);
+        pathNum--;
+        RemoveAllNullInAllNodsList(AllNods);
     }
 
-    
-
+    //删除所有path
     public void ClearAllPaths()
     {
-
-        if ((AllPaths != null) && (AllPaths.Count != 0))
+        for (int i = 0; i < AllPaths.Count; i++)
         {
-            if (ConfirmToDelete())
+            if (AllPaths[i] != null)
             {
-                for (int i = 0; i < AllPaths.Count; i++)
-                {
-                    if (AllPaths[i] != null)
-                    {
-                        DestroyImmediate(AllPaths[i].gameObject);
+                DestroyImmediate(AllPaths[i].gameObject);
 
-                    }
-                }
-                AllPaths = new List<PathList>();
-                pathNum = 0;
-                RemoveAllNullInAllNodsList(AllNods);
-                Debug.Log("已清空");
             }
-            else
-            {
-                Debug.LogError("待删除列表为空！");
-            }
-
         }
-
+        AllPaths = new List<PathList>();
+        pathNum = 0;
+        RemoveAllNullInAllNodsList(AllNods);
     }
-
-    //------------------------------------------------------------------------------
-    //以下为编辑器类的重写，调用公共方法集，实现GUI面板上的按钮事件
-
-#if UNITY_EDITOR
-    //inspector重写
-    [CustomEditor(typeof(PathsManager))]
-    public class PathBuilderEditor : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-            {
-
-                PathsManager manager = (PathsManager)target;
-
-                if (GUILayout.Button("AddOne"))
-                {
-                    manager.AddPath();
-                }
-                if (GUILayout.Button("Clear"))
-                {
-                    manager.ClearAllPaths();
-                }
-                if (GUILayout.Button("DeleteOne"))
-                {
-                    manager.DeleteOne();
-                }
-
-            }
-
-        }
-    }
-    //
-    [MenuItem("GameObject/2D Object/PathManager")]
-    static void CreatManager(MenuCommand menuCommand)
-    {
-        GameObject pathManager = new GameObject("PathManager");
-        //pathManager.transform.parent = gameObject.transform;
-        pathManager.AddComponent<PathsManager>();
-        GameObjectUtility.SetParentAndAlign(pathManager, menuCommand.context as GameObject);
-        Undo.RegisterCreatedObjectUndo(pathManager, "Create " + pathManager.name);
-        Selection.activeObject = pathManager;
-
-    }
-
-#endif
-
-
-
-
-
-
-
 
 }
