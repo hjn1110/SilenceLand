@@ -52,6 +52,8 @@ public class SoundSpread : MonoBehaviour
         AddTrigger();
 
     }
+
+    //刷新
     private void refresh()
     {
         tileHearIndeed.ClearAllTiles();

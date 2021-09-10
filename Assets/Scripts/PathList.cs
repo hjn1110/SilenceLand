@@ -32,7 +32,7 @@ public class PathList : MonoBehaviour
     private GameObject Add(int i)
     {
         GameObject nodObject = new GameObject("Nod_" + i);
-        nodObject.transform.parent = gameObject.transform;
+        nodObject.transform.SetParent(gameObject.transform);
         PathNods nod = nodObject.AddComponent<PathNods>();
         nods.Add(nod);
         if ((manager.AllNods==null)||(manager.AllNods.Count == 0))

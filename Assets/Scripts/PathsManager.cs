@@ -50,6 +50,11 @@ public class PathsManager : MonoBehaviour
     {
         return UnityEditor.EditorUtility.DisplayDialog("确认删除", "是否要清空最近创建的一个nod？此操作行为不可撤销。", "确认", "取消");
     }
+
+
+
+    //以下为创建paths相关的公共方法集，由编辑器类调用
+
     //工具方法，用于移除当前allNods中为空的对象
     //因为destory所有Paths后，paths中包含的所有nods未从allNods中移除
     public void RemoveAllNullInAllNodsList(List<PathNods> nods)
@@ -79,9 +84,6 @@ public class PathsManager : MonoBehaviour
 
     }
 
-
-    //以下为创建paths相关的公共方法集，由编辑器类调用
-
     public void AddPath()
     {
         if (pathNum == 0)
@@ -89,7 +91,7 @@ public class PathsManager : MonoBehaviour
             AllPaths = new List<PathList>();
         }
         GameObject pathObject = new GameObject("Path_" + pathNum);
-        pathObject.transform.parent = gameObject.transform;
+        pathObject.transform.SetParent(gameObject.transform);
         PathList path = pathObject.AddComponent<PathList>();
         path.manager = this;
         AllPaths.Add(path);

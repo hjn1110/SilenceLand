@@ -43,7 +43,7 @@ public class TriggerCreater : MonoBehaviour
         circle.radius = r * grid.cellSize.x;
         circle.offset = new Vector2(0, 0);
         */
-        TriggerField.transform.parent = parentTrans;
+        TriggerField.transform.SetParent(parentTrans);
         TriggerField.transform.localPosition = Vector3.zero;
 
         return TriggerField;
