@@ -7,16 +7,30 @@ public class SoundSpreadPool : GameObjectPool
 
     public override void InitPool(string objPoolName, Transform objTransform)
     {
-        
+
         base.InitPool(objPoolName, objTransform);
-
-
+        preFab = Resources.Load("testFab")as GameObject;
+        if (preFab == null)
+        {
+            Debug.Log("PreFabGetError");
+        }
 
     }
 
 
+    public override GameObject GetInstance(Vector2 position, float lifetime)
+    {
+        lifetime = 5;
+        return base.GetInstance(position, lifetime);
 
+    }
 
-
-
+    public override void Destroy()
+    {
+        base.Destroy();
+        Destroy(preFab);
+    }
 }
+
+
+

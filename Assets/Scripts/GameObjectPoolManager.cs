@@ -15,10 +15,63 @@ public class GameObjectPoolManager : MonoBehaviour
 
     private Dictionary<string, GameObjectPool> poolDic;
 
-    [HideInInspector]
-    public GameObject poolContent;
+    //[HideInInspector]
+    //public GameObject poolContent;
     [HideInInspector]
     public GameObject instanceContent;
+
+
+
+    //TEST
+    bool ifCreatPool = false;
+    private void Update()
+    {
+
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            if (!ifCreatPool)
+            {
+                Debug.Log("创建池完成");
+                CreatPool<SoundSpreadPool>("SoundPool");
+                ifCreatPool = true;
+            }
+            
+        }
+        if (Input.GetMouseButton(0))
+        {
+            if (ifCreatPool)
+            {
+                if (Time.frameCount % 2 == 0)//10帧检查一次状态。FPS=30时约1秒检查3次，60时则6次
+                {
+                    Vector2 MouseScrPos = Input.mousePosition;
+                    Vector2 MouseWrdPos = Camera.main.ScreenToWorldPoint(MouseScrPos);
+
+                    GetInstance("SoundPool", MouseWrdPos, 2);
+                }
+
+
+                    
+            }
+            
+           
+        }
+        
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
 
     private void Start()
     {
@@ -28,7 +81,7 @@ public class GameObjectPoolManager : MonoBehaviour
     private void initPoolManager()
     {
         poolDic = new Dictionary<string, GameObjectPool>();
-        poolContent = new GameObject("Pool");
+        //poolContent = new GameObject("Pool");
         instanceContent = new GameObject("Instance");
     }
 
@@ -45,8 +98,16 @@ public class GameObjectPoolManager : MonoBehaviour
         //初始化pool
         //设置父对象、
         obj.transform.SetParent(transform);
-        T pool = new T();
+        //T pool = new T();
+        T pool = gameObject.AddComponent<T>();
+        if (pool == null)
+        {
+            Debug.Log("Pool==Null");
+
+        }
         pool.InitPool(poolName, obj.transform);
+        pool.InitDeadLine();
+
         poolDic.Add(poolName,pool);
         return pool;
     }
