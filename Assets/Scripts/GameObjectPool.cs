@@ -8,8 +8,8 @@ public class GameObjectPool : SerializedMonoBehaviour
 {
     //公共字段
     private string poolName;
-    public int maxCount = 10;
-    public int minCount = 0;
+    public int maxCount = 30;
+    public int minCount = 5;
     //[SerializeField]
     //public Queue<GameObject> poolQueue;
     //public ConcurrentQueue<GameObject> poolCCQueue;
