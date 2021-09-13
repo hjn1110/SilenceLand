@@ -235,7 +235,7 @@ public abstract class Enemies : MonoBehaviour
         agent.baseOffset = 0.1f;
         agent.speed = moveSpeed;
         agent.acceleration = 2f;
-        agent.stoppingDistance = 0.3f;
+        agent.stoppingDistance = 0.25f;
         agent.autoBraking = true;
         agent.radius = 0.1f;
         agent.height = 0.2f;
