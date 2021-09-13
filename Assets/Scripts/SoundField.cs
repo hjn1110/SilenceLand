@@ -11,7 +11,7 @@ public class SoundField : MonoBehaviour
         if (collision.CompareTag("Enemy"))
         {
             //Debug.Log("准备传递消息："+ collision.transform);
-            SendMessageUpwards("AddEnemyInTrigger", collision.transform);
+            SendMessageUpwards("AddEnemyInTrigger", collision.transform, SendMessageOptions.DontRequireReceiver);
             Debug.Log("注册监听者:"+collision.gameObject.name);
             //向父类中的SoundSpread注册enemyTrans
         }
@@ -22,7 +22,8 @@ public class SoundField : MonoBehaviour
         if (collision.CompareTag("Enemy"))
         {
             //Debug.Log("准备传递消息："+ collision.transform);
-            SendMessageUpwards("RemoveEnemyInTrigger", collision.transform);
+            
+            SendMessageUpwards("RemoveEnemyInTrigger", collision.transform,SendMessageOptions.DontRequireReceiver);
             Debug.Log("移除监听者:" + collision.gameObject.name);
             //向父类中的SoundSpread移除enemyTrans
         }

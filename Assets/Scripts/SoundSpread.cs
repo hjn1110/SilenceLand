@@ -20,7 +20,7 @@ public struct soundUnit
 public class SoundSpread : MonoBehaviour
 {
 
-    SoundSpreadVisualization sound;
+    SoundSpreadVisualization sound { get { return SoundSpreadVisualization.instance; } }
     Global global { get { return Global.instance; } }
 
     private Tilemap tileHearIndeed { get { return sound.tileHearIndeed; } }
@@ -34,24 +34,38 @@ public class SoundSpread : MonoBehaviour
     private int r = 30;
 
     List<nod> list0;//存储听觉范围
-    List<nod> list1;//存储当前回合需检测的tile
+    List<nod> list1;//存储当前回合需检测的tile 
     List<nod> list3;//存储下个回合应检测的tile
     Dictionary<Vector3Int, float> SoundList;//用于存储完整听觉传导，以及其中每个格子的音量，用坐标可查询音量
 
     Vector3Int oP;
     int TimeOfSpread;
 
-
+    
     private void Start()
     {
         //global = Global.instance;
-        sound = SoundSpreadVisualization.instance;
         hearingList = new List<Transform>();
-
         refresh();
         AddTrigger();
+        
 
     }
+
+    public void MakeASound()
+    {
+        refresh();
+        ContinuelyFlowIn();
+    }
+
+    
+    private void OnEnable()
+    {
+        //Init();
+        //ContinuelyFlowIn();
+    }
+    
+     
 
     //刷新
     private void refresh()
@@ -80,10 +94,11 @@ public class SoundSpread : MonoBehaviour
         InitAround();
         TimeOfSpread = 0;
 
-        ContinuelyFlowIn();
+        //ContinuelyFlowIn();
 
     }
-    
+
+    /*
     void Update()
     {
         
@@ -94,12 +109,13 @@ public class SoundSpread : MonoBehaviour
             
         }
     }
+    */
 
     //Transform enemyTrans;
     Vector3Int enemyTilePos;
 
 
-
+    //用于判断敌人是否离开声场范围，离开该范围的敌人不进入检测
     public void RemoveEnemyInTrigger(Transform trans)
     {
         hearingList.Remove(trans);
@@ -107,7 +123,7 @@ public class SoundSpread : MonoBehaviour
 
     List<Transform> hearingList;
 
-    
+    //用于判断敌人是否位于声场范围，基于位于的前提下进行听觉传导检测
     public void AddEnemyInTrigger(Transform trans)
     {
         hearingList.Add(trans);

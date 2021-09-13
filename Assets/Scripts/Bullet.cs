@@ -8,7 +8,10 @@ public class Bullet : MonoBehaviour
     private Global global;
     private GameObject player;
     public Rigidbody2D rigid;
-    
+    public ParticleSystem explode;
+    private SpriteRenderer sprite;
+    //private SoundSpread sound;
+    private SoundSpreadManager soundManager;
 
     private void Start()
     {
@@ -20,7 +23,9 @@ public class Bullet : MonoBehaviour
     private void init()
     {
         global = Global.instance;
+        soundManager = SoundSpreadManager.instance;
         player = global.player;
+        sprite = GetComponent<SpriteRenderer>();
     }
 
     private void OnEnable()
@@ -30,8 +35,9 @@ public class Bullet : MonoBehaviour
 
     public void Move()
     {
-
         init();
+        //sprite.enabled = true;
+
         Vector3 dir = (transform.position - player.transform.position).normalized;
         dir.z = 0;
 
@@ -54,12 +60,15 @@ public class Bullet : MonoBehaviour
     {
         if (collision.gameObject.layer == 16 )
         {
-            Debug.Log("碰撞");
+            soundManager.MakeASound(transform.position);
+            //Debug.Log("碰撞");
+            //explode.Play();
             Destroy();
         }
     }
     private void Destroy()
     {
+        //sprite.enabled = false;
         gameObject.SetActive(false);
     }
 

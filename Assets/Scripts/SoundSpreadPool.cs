@@ -10,7 +10,7 @@ public class SoundSpreadPool : GameObjectPool
 
         base.InitPool(objPoolName, objTransform);
         //preFab = Resources.Load("testFab")as GameObject;
-        preFab = Resources.Load("bulletSample") as GameObject;
+        preFab = Resources.Load("ASound") as GameObject;
         if (preFab == null)
         {
             Debug.Log("PreFabGetError");

@@ -10,6 +10,7 @@ public class GameObjectPoolManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        initPoolManager();
     }
     #endregion
 
@@ -24,6 +25,26 @@ public class GameObjectPoolManager : MonoBehaviour
 
     //TEST
     bool ifCreatPool = false;
+
+    /*
+    private void Start()
+    {
+        initPoolManager();
+    }
+    */
+    private void initPoolManager()
+    {
+        poolDic = new Dictionary<string, GameObjectPool>();
+        instanceContent = new GameObject("Instance");
+
+
+        //CreatPool<BulletPool>("BulletPool");
+        //CreatPool<SoundSpreadPool>("SoundPool");
+    }
+
+    
+
+
     private void Update()
     {
 
@@ -33,6 +54,7 @@ public class GameObjectPoolManager : MonoBehaviour
             if (!ifCreatPool)
             {
                 Debug.Log("创建池完成");
+                CreatPool<BulletPool>("BulletPool");
                 CreatPool<SoundSpreadPool>("SoundPool");
                 ifCreatPool = true;
             }
@@ -47,7 +69,7 @@ public class GameObjectPoolManager : MonoBehaviour
                     Vector2 MouseScrPos = Input.mousePosition;
                     Vector2 MouseWrdPos = Camera.main.ScreenToWorldPoint(MouseScrPos);
 
-                    GetInstance("SoundPool", MouseWrdPos, 2);
+                    GetInstance("BulletPool", MouseWrdPos, 2);
                 }
 
 
@@ -73,17 +95,8 @@ public class GameObjectPoolManager : MonoBehaviour
 
 
 
-    private void Start()
-    {
-        initPoolManager();
-    }
 
-    private void initPoolManager()
-    {
-        poolDic = new Dictionary<string, GameObjectPool>();
-        //poolContent = new GameObject("Pool");
-        instanceContent = new GameObject("Instance");
-    }
+   
 
     //创建Pool，Pool必须以GameObjectPool为基类
     public T CreatPool<T>(string poolName) where T : GameObjectPool, new()
