@@ -139,6 +139,8 @@ public class SoundSpread : MonoBehaviour
 
         GameObject hearField = TriggerCreater.instance.AddTriggerObject(r, transform, "HearField");
         hearField.AddComponent<SoundField>();
+        GameObject hearPoint = TriggerCreater.instance.AddTriggerObject(1, transform, "HearPoint");
+        hearPoint.AddComponent<SoundPoint>();
 
     }
 

@@ -7,14 +7,16 @@ using Silent.MapObject.SearchObject;
 public abstract class Enemies : MonoBehaviour
 {
     //可配置属性 
-    protected float hearing { get { return setting._hearing; } }//听力
-    protected float vision { get { return setting._vision; }  }//视力
-    protected float fleeVision { get { return setting._fleeVision; } }//逃逸视力
-    protected float patrolVision { get { return setting._patrolVision; }}
-    protected float hp { get { return setting._maxHp; } set { hp = setting._maxHp; } }//血量
-    protected float moveSpeed { get { return setting._moveSpeed; } set { moveSpeed = setting._moveSpeed; } }//移动速度
-    protected float angleSpeed { get { return setting._angleSpeed; } set { angleSpeed = setting._angleSpeed; } }//转身速度
-    protected float hearingReduceSpeed { get { return setting._hearingReduceSpeed; } }//听力记忆衰减速度
+    protected float hearing { get { return setting.hearing; } }//听力
+    protected float vision { get { return setting.vision; }  }//视力
+    protected float fleeVision { get { return setting.fleeVision; } }//逃逸视力
+    protected float patrolVision { get { return setting.patrolVision; }}
+    protected float hp { get { return setting.maxHp; } set { hp = setting.maxHp; } }//血量
+    protected float moveSpeed { get { return setting.moveSpeed; } set { moveSpeed = setting.moveSpeed; } }//移动速度
+    protected float angleSpeed { get { return setting.angleSpeed; } set { angleSpeed = setting.angleSpeed; } }//转身速度
+    protected float hearingReduceSpeed { get { return setting.hearingReduceSpeed; } }//听力记忆衰减速度
+    protected float hearingDelayClearTime { get { return setting.hearingDelayClearTime; } }
+    
 
     //字段配置表
     protected GlobalSettings globalSetting;
@@ -233,11 +235,12 @@ public abstract class Enemies : MonoBehaviour
         agent.baseOffset = 0.1f;
         agent.speed = moveSpeed;
         agent.acceleration = 2f;
-        agent.stoppingDistance = 0.25f;
+        agent.stoppingDistance = 0.3f;
         agent.autoBraking = true;
         agent.radius = 0.1f;
         agent.height = 0.2f;
-        agent.avoidancePriority = 1;
+        //agent.avoidancePriority = 1;
+        agent.avoidancePriority = Random.Range(0,99);
         agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
 
         //下面两行是为了使用navMesh2D(即navMeshPlus)所必须做的设置，因为该脚本对navMesh的导航坐标系(xz)做了翻转(xy)，不再能使用其自身的旋转方法
@@ -309,6 +312,18 @@ public abstract class Enemies : MonoBehaviour
                 }
             }
         }
+    }
+
+    //抵达目标后，延时清除该点音量记忆
+    public void HearingDelayClear(Vector2 target)
+    {
+        soundSourceList.Remove(target);
+        StopCoroutine(nameof(DelayClear));
+        StartCoroutine(DelayClear());
+    }
+    IEnumerator DelayClear()
+    {
+        yield return new WaitForSecondsRealtime(hearingDelayClearTime);
     }
 
     //判断声音记忆List是否为空，作为排序依据

@@ -30,7 +30,7 @@ public class PathNods : MonoBehaviour
         //Debug.Log("创建Trigger");
         gameObject.tag = "PathNod";
         triggerCreater = TriggerCreater.instance;
-        triggerCreater.AddTriggerComponent(gameObject, 1.2f);
+        triggerCreater.AddTriggerComponent(gameObject, 4f);
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
