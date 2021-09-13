@@ -4,12 +4,14 @@ using UnityEngine;
 [CreateAssetMenu]
 public class EnemySetting : ScriptableObject
 {
-    public float _hearing = 0.03f;
-    public float _vision = 5f;
-    public float _fleeVision = 10f;
-    public float _patrolVision = 10f;
-    public float _maxHp = 10f;
-    public float _moveSpeed = 0.5f;
-    public float _angleSpeed = 10f;
-    public float _hearingReduceSpeed = 0.01f;
+    public float hearing = 0.03f;
+    public float vision = 5f;
+    public float fleeVision = 10f;
+    public float patrolVision = 10f;
+    public float maxHp = 10f;
+    public float moveSpeed = 0.5f;
+    public float angleSpeed = 10f;
+    public float hearingReduceSpeed = 0.01f;
+    public float hearingReduceSpeedLevel2 = 0.02f;
+    public float hearingDelayClearTime = 2f;
 }
