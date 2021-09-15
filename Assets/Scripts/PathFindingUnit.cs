@@ -14,19 +14,35 @@ public class PathFindingUnit : MonoBehaviour
 		PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
 	}
 
-	public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
+    private void Update()
+    {
+		if(Time.frameCount % 20 == 0)
+        {
+			PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+
+		}
+
+	}
+
+
+    public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
 	{
 		if (pathSuccessful)
 		{
 			path = newPath;
-			targetIndex = 0;
-			StopCoroutine("FollowPath");
-			StartCoroutine("FollowPath");
+			if (path != null && path.Length > 0)
+			{
+				targetIndex = 0;
+				StopCoroutine("FollowPath");
+				StartCoroutine("FollowPath");
+			}
+			
 		}
 	}
 
 	IEnumerator FollowPath()
 	{
+        
 		Vector3 currentWaypoint = path[0];
 
 		while (true)
