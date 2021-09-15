@@ -6,7 +6,6 @@ using System;
 
 public class PathFinding : MonoBehaviour
 {
-	//public Transform seeker, target;
 	PathRequestManager requestManager;
 	GridManager grid;
 
@@ -16,20 +15,12 @@ public class PathFinding : MonoBehaviour
 		grid = GetComponent<GridManager>();
 	}
 
+
 	public void StartFindPath(Vector3 startPos, Vector3 targetPos)
 	{
 		StartCoroutine(FindPath(startPos, targetPos));
 	}
 
-	/*
-	void Update()
-	{
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-			FindPath(seeker.position, target.position);
-		}
-	}
-	*/
 	IEnumerator FindPath(Vector3 startPos, Vector3 targetPos)
 	{
 
@@ -41,6 +32,7 @@ public class PathFinding : MonoBehaviour
 
 		GridNode startNode = grid.NodeFromWorldPoint(startPos);
 		GridNode targetNode = grid.NodeFromWorldPoint(targetPos);
+		startNode.parent = startNode;
 
 
 		if (startNode.walkable && targetNode.walkable)
@@ -57,7 +49,7 @@ public class PathFinding : MonoBehaviour
 				if (currentNode == targetNode)
 				{
 					sw.Stop();
-					print("Path Found:"+sw.ElapsedMilliseconds+"ms");
+					print("Path found: " + sw.ElapsedMilliseconds + " ms");
 					pathSuccess = true;
 					break;
 				}
@@ -69,7 +61,7 @@ public class PathFinding : MonoBehaviour
 						continue;
 					}
 
-					int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
+					int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour) + neighbour.movementPenalty;
 					if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
 					{
 						neighbour.gCost = newMovementCostToNeighbour;
@@ -93,9 +85,7 @@ public class PathFinding : MonoBehaviour
 
 	}
 
-
-
-	Vector3[]  RetracePath(GridNode startNode, GridNode endNode)
+	Vector3[] RetracePath(GridNode startNode, GridNode endNode)
 	{
 		List<GridNode> path = new List<GridNode>();
 		GridNode currentNode = endNode;
@@ -108,7 +98,6 @@ public class PathFinding : MonoBehaviour
 		Vector3[] waypoints = SimplifyPath(path);
 		Array.Reverse(waypoints);
 		return waypoints;
-
 
 	}
 

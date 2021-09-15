@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,10 @@ public class GridManager : MonoBehaviour
 	public LayerMask unwalkableMask;
 	public Vector2 gridWorldSize;
 	public float nodeRadius;
+	public TerrainType[] walkableRegions;
+	Dictionary<int, int> walkableRegionsDictionary = new Dictionary<int, int>();
+	LayerMask walkableMask;
+
 	GridNode[,] grid;
 
 	float nodeDiameter;
@@ -19,6 +24,13 @@ public class GridManager : MonoBehaviour
 		nodeDiameter = nodeRadius * 2;
 		gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
 		gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
+
+		foreach (TerrainType region in walkableRegions)
+		{
+			walkableMask.value |= region.terrainMask.value;
+			walkableRegionsDictionary.Add((int)Mathf.Log(region.terrainMask.value, 2), region.terrainPenalty);
+		}
+
 		CreateGrid();
 	}
 
@@ -30,12 +42,13 @@ public class GridManager : MonoBehaviour
 		}
 	}
 
-	void CreateGrid()
+ 
+
+    void CreateGrid()
 	{
 		grid = new GridNode[gridSizeX, gridSizeY];
-		// worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
+		//Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
 		Vector2 worldBottomLeft = (Vector2)transform.position - Vector2.right * gridWorldSize.x / 2 - Vector2.up * gridWorldSize.y / 2;
-
 		for (int x = 0; x < gridSizeX; x++)
 		{
 			for (int y = 0; y < gridSizeY; y++)
@@ -46,7 +59,23 @@ public class GridManager : MonoBehaviour
 				//bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkableMask));
 				bool walkable = !(Physics2D.OverlapCircle(worldPoint, nodeRadius, unwalkableMask));
 
-				grid[x, y] = new GridNode(walkable, worldPoint, x, y);
+				int movementPenalty = 0;
+
+				if (walkable)
+				{
+					//Ray ray = new Ray(worldPoint + Vector3.up * 50, Vector3.down);
+
+					//RaycastHit hit;
+					RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector3.zero);
+
+					//if (Physics.Raycast(ray, out hit, 100, walkableMask))
+					if(hit)
+					{
+						walkableRegionsDictionary.TryGetValue(hit.collider.gameObject.layer, out movementPenalty);
+					}
+				}
+
+				grid[x, y] = new GridNode(walkable, worldPoint, x, y, movementPenalty);
 			}
 		}
 	}
@@ -92,19 +121,23 @@ public class GridManager : MonoBehaviour
 	void OnDrawGizmos()
 	{
 		//Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-		Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 0));
+		Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 1));
 		if (grid != null && displayGridGizmos)
 		{
 			foreach (GridNode n in grid)
 			{
 				Gizmos.color = (n.walkable) ? Color.white : Color.red;
-				Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .01f));
+				Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
 			}
 		}
 	}
 
-
-
+	[System.Serializable]
+	public class TerrainType
+	{
+		public LayerMask terrainMask;
+		public int terrainPenalty;
+	}
 
 
 

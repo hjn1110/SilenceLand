@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class NodeHeap<T>where T:IHeapItem<T>
+public class NodeHeap<T> where T : IHeapItem<T>
 {
 	T[] items;
 	int currentItemCount;
@@ -115,6 +115,9 @@ public class NodeHeap<T>where T:IHeapItem<T>
 		itemA.HeapIndex = itemB.HeapIndex;
 		itemB.HeapIndex = itemAIndex;
 	}
+
+
+
 }
 
 public interface IHeapItem<T> : IComparable<T>

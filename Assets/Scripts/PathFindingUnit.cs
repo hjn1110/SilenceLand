@@ -5,7 +5,7 @@ using UnityEngine;
 public class PathFindingUnit : MonoBehaviour
 {
 	public Transform target;
-	float speed = 0.5f;
+	float speed = 1;
 	Vector3[] path;
 	int targetIndex;
 
@@ -28,6 +28,7 @@ public class PathFindingUnit : MonoBehaviour
 	IEnumerator FollowPath()
 	{
 		Vector3 currentWaypoint = path[0];
+
 		while (true)
 		{
 			if (transform.position == currentWaypoint)
@@ -53,7 +54,7 @@ public class PathFindingUnit : MonoBehaviour
 			for (int i = targetIndex; i < path.Length; i++)
 			{
 				Gizmos.color = Color.black;
-				Gizmos.DrawCube(path[i], Vector3.one * 0.1f );
+				Gizmos.DrawCube(path[i], Vector3.one * .1f);
 
 				if (i == targetIndex)
 				{
