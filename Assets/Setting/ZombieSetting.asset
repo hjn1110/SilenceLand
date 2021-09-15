@@ -17,7 +17,7 @@ MonoBehaviour:
   fleeVision: 10
   patrolVision: 10
   maxHp: 10
-  moveSpeed: 0.4
+  moveSpeed: 0.2
   angleSpeed: 400
   hearingReduceSpeed: 0.01
   hearingReduceSpeedLevel2: 0.02

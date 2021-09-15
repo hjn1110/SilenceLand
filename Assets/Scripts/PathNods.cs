@@ -30,12 +30,13 @@ public class PathNods : MonoBehaviour
         //Debug.Log("创建Trigger");
         gameObject.tag = "PathNod";
         triggerCreater = TriggerCreater.instance;
-        triggerCreater.AddTriggerComponent(gameObject, 5f);
+        triggerCreater.AddTriggerComponent(gameObject, 0.1f);
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Enemy"))
         {
+            if(collision.GetComponent<Enemies>().thePatrolTarget == transform.position)
             collision.GetComponent<Enemies>().SetNextTarget(this);
         }
     }

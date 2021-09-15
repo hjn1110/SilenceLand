@@ -98,7 +98,7 @@ public class SoundSpread : MonoBehaviour
 
     }
 
-    /*
+    
     void Update()
     {
         
@@ -109,7 +109,7 @@ public class SoundSpread : MonoBehaviour
             
         }
     }
-    */
+    
 
     //Transform enemyTrans;
     Vector3Int enemyTilePos;
@@ -193,7 +193,7 @@ public class SoundSpread : MonoBehaviour
         {
             //Debug.Log("监听者列表为空");
         }
-
+        //yield return null;
     }
 
     List<Vector3Int> around;
@@ -271,6 +271,8 @@ public class SoundSpread : MonoBehaviour
             for (int j = 0; j < around.Count; j++)
             {
                 Vector3Int p = new Vector3Int(list1[i].position.x + around[j].x, list1[i].position.y + around[j].y, 0);
+                //Vector3Int p = new Vector3Int(list1[i].position.x + around[j].x, 0,list1[i].position.y + around[j].y);
+
                 scan++;
                 if ((p.x >= oP.x - r) && (p.x - r <= oP.x + r) && (p.y >= oP.y - r) && (p.y - r <= oP.y + r)) 
                 {

@@ -40,6 +40,8 @@ public class GameObjectPoolManager : MonoBehaviour
 
         //CreatPool<BulletPool>("BulletPool");
         //CreatPool<SoundSpreadPool>("SoundPool");
+
+        //Cursor.visible = false;
     }
 
     
@@ -64,7 +66,7 @@ public class GameObjectPoolManager : MonoBehaviour
         {
             if (ifCreatPool)
             {
-                if (Time.frameCount % 2 == 0)//10帧检查一次状态。FPS=30时约1秒检查3次，60时则6次
+                if (Time.frameCount % 1 == 0)//10帧检查一次状态。FPS=30时约1秒检查3次，60时则6次
                 {
                     Vector2 MouseScrPos = Input.mousePosition;
                     Vector2 MouseWrdPos = Camera.main.ScreenToWorldPoint(MouseScrPos);

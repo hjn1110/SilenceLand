@@ -8,9 +8,9 @@ public abstract class Enemies : MonoBehaviour
 {
     //可配置属性 
     protected float hearing { get { return setting.hearing; } }//听力
-    protected float vision { get { return setting.vision; }  }//视力
-    protected float fleeVision { get { return setting.fleeVision; } }//逃逸视力
-    protected float patrolVision { get { return setting.patrolVision; }}
+    protected int vision { get { return setting.vision; }  }//视力
+    protected int fleeVision { get { return setting.fleeVision; } }//逃逸视力
+    protected int patrolVision { get { return setting.patrolVision; }}
     protected float hp { get { return setting.maxHp; } set { hp = setting.maxHp; } }//血量
     protected float moveSpeed { get { return setting.moveSpeed; } set { moveSpeed = setting.moveSpeed; } }//移动速度
     protected float angleSpeed { get { return setting.angleSpeed; } set { angleSpeed = setting.angleSpeed; } }//转身速度
@@ -52,8 +52,9 @@ public abstract class Enemies : MonoBehaviour
 
     //路径属性
     //public PathList path;//挂载和当前AI匹配的路径
-    [SerializeField]
-    private Vector3 thePatrolTarget;//巡逻指向的下一个路线目标
+    //[SerializeField]
+    [HideInInspector]
+    public Vector3 thePatrolTarget;//巡逻指向的下一个路线目标
     //[HideInInspector]
     public LinkedList<PathNods> NodsInView;//用于存储当前视野中的nods
     //[HideInInspector]
@@ -197,24 +198,27 @@ public abstract class Enemies : MonoBehaviour
     //LostPlayer、LostTarget后，返回巡逻状态，先调用该方法搜索距离自己最近的nod作为目标
     public void SearchClosestTarget()
     {
-       
-        if ((NodsInView != null)&&(NodsInView.Count!=0))
+        if (thePatrolTarget != Vector3.zero)
         {
-            //Debug.Log("执行算法1:视野中存在目标，前往:"+ theClosestNodOfLinkedList(NodsInView).gameObject.name);
-            thePatrolTarget = theClosestNodOfLinkedList(NodsInView).transform.position;
+            //Debug.Log("执行算法3:上一次巡逻过的目标非空，前往:" + thePatrolTarget);
         }
         else
+
         if (theLastNodInView != null)
         {
             //Debug.Log("执行算法2:上一次视野中记录过目标，前往:" + theLastNodInView.gameObject.name);
             thePatrolTarget = theLastNodInView.transform.position;
         }
         else
-        if (thePatrolTarget != Vector3.zero)
+
+         if ((NodsInView != null)&&(NodsInView.Count!=0))
         {
-            //Debug.Log("执行算法3:上一次巡逻过的目标非空，前往:" + thePatrolTarget);
+            //Debug.Log("执行算法1:视野中存在目标，前往:"+ theClosestNodOfLinkedList(NodsInView).gameObject.name);
+            thePatrolTarget = theClosestNodOfLinkedList(NodsInView).transform.position;
         }
         else
+        
+        
         if((manager.AllNods!=null)&&(manager.AllNods.Count!=0))
         {
             thePatrolTarget = theClosestNodOfList(manager.AllNods).transform.position;
@@ -228,6 +232,36 @@ public abstract class Enemies : MonoBehaviour
 
     //-------------------------------------------------------------------------
     //寻路相关
+
+    public bool OnBlocked()
+    {
+        ContactFilter2D _filter;
+        LayerMask _seeObbMask;
+        int _hitNum;
+        RaycastHit2D[] _hits;
+        _seeObbMask = LayerMask.GetMask("enemies");
+        _filter = new ContactFilter2D
+        {
+            useLayerMask = true,
+            useTriggers = false,
+            layerMask = seeObbMask,
+        };
+        _hits = new RaycastHit2D[36];
+        _hitNum = Physics2D.Raycast(gameObject.transform.position, transform.up, filter, hits, 0.1f);
+        if (_hitNum > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+
+    }
+
+
+
     protected void AddNavMeshAgent()
     {
         agent = gameObject.AddComponent<NavMeshAgent>();
@@ -235,12 +269,13 @@ public abstract class Enemies : MonoBehaviour
         agent.baseOffset = 0.1f;
         agent.speed = moveSpeed;
         agent.acceleration = 2f;
-        agent.stoppingDistance = 0.25f;
+        //agent.stoppingDistance = 0.25f;
+        agent.stoppingDistance = 0.1f;
         agent.autoBraking = true;
-        agent.radius = 0.1f;
+        agent.radius = 0.2f;
         agent.height = 0.2f;
         //agent.avoidancePriority = 1;
-        agent.avoidancePriority = Random.Range(0,99);
+        //agent.avoidancePriority = Random.Range(0,99);
         agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
 
         //下面两行是为了使用navMesh2D(即navMeshPlus)所必须做的设置，因为该脚本对navMesh的导航坐标系(xz)做了翻转(xy)，不再能使用其自身的旋转方法

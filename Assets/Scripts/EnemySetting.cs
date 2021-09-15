@@ -5,9 +5,9 @@ using UnityEngine;
 public class EnemySetting : ScriptableObject
 {
     public float hearing = 0.03f;
-    public float vision = 5f;
-    public float fleeVision = 10f;
-    public float patrolVision = 10f;
+    public int vision = 5;
+    public int fleeVision = 10;
+    public int patrolVision = 10;
     public float maxHp = 10f;
     public float moveSpeed = 0.5f;
     public float angleSpeed = 10f;
