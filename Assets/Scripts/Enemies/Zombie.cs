@@ -8,8 +8,13 @@ public class Zombie : Enemies
     //指定当前Enemy类型的参数配置
     protected override EnemySetting setting { get { return globalSetting.zombieSetting; } }
 
-
-    
+    /*
+    IMoveComponent moveComponent;
+    public void SetDependance(IMoveComponent moveComponent)
+    {
+        this.moveComponent = moveComponent;
+    }
+    */
 
     //注册状态机
     protected override void initFSM()

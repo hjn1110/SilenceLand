@@ -19,10 +19,7 @@ public class ZombiePatrolState : FSMState
     {
         enemy.GetComponent<SpriteRenderer>().color = new Color(0, 1, 0, 1);
         enemy.GetComponent<Zombie>().Patrol();
-        if (enemy.GetComponent<Zombie>().OnBlocked())
-        {
-            Debug.Log("堵住了");
-        }
+         
     }
 
     public override void Reason(GameObject enemy)

@@ -200,20 +200,20 @@ public abstract class Enemies : MonoBehaviour
     {
         if (thePatrolTarget != Vector3.zero)
         {
-            //Debug.Log("执行算法3:上一次巡逻过的目标非空，前往:" + thePatrolTarget);
+            Debug.Log("执行算法3:上一次巡逻过的目标非空，前往:" + thePatrolTarget);
         }
         else
 
         if (theLastNodInView != null)
         {
-            //Debug.Log("执行算法2:上一次视野中记录过目标，前往:" + theLastNodInView.gameObject.name);
+            Debug.Log("执行算法2:上一次视野中记录过目标，前往:" + theLastNodInView.gameObject.name);
             thePatrolTarget = theLastNodInView.transform.position;
         }
         else
 
          if ((NodsInView != null)&&(NodsInView.Count!=0))
         {
-            //Debug.Log("执行算法1:视野中存在目标，前往:"+ theClosestNodOfLinkedList(NodsInView).gameObject.name);
+            Debug.Log("执行算法1:视野中存在目标，前往:"+ theClosestNodOfLinkedList(NodsInView).gameObject.name);
             thePatrolTarget = theClosestNodOfLinkedList(NodsInView).transform.position;
         }
         else
@@ -222,7 +222,7 @@ public abstract class Enemies : MonoBehaviour
         if((manager.AllNods!=null)&&(manager.AllNods.Count!=0))
         {
             thePatrolTarget = theClosestNodOfList(manager.AllNods).transform.position;
-            //Debug.Log("执行算法4:搜索全体nods中最近点，前往:" + theClosestNodOfList(PathNods.AllNods).gameObject.name);
+            Debug.Log("执行算法4:搜索全体nods中最近点，前往:" + theClosestNodOfList(manager.AllNods).gameObject.name);
 
         }
 
@@ -233,95 +233,54 @@ public abstract class Enemies : MonoBehaviour
     //-------------------------------------------------------------------------
     //寻路相关
 
-    public bool OnBlocked()
-    {
-        ContactFilter2D _filter;
-        LayerMask _seeObbMask;
-        int _hitNum;
-        RaycastHit2D[] _hits;
-        _seeObbMask = LayerMask.GetMask("enemies");
-        _filter = new ContactFilter2D
-        {
-            useLayerMask = true,
-            useTriggers = false,
-            layerMask = seeObbMask,
-        };
-        _hits = new RaycastHit2D[36];
-        _hitNum = Physics2D.Raycast(gameObject.transform.position, transform.up, filter, hits, 0.1f);
-        if (_hitNum > 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-
-
-    }
-
-
+    AIMoveComponent aIMoveComponent;
 
     protected void AddNavMeshAgent()
     {
-        agent = gameObject.AddComponent<NavMeshAgent>();
-        agent.agentTypeID = 0;
-        agent.baseOffset = 0.1f;
-        agent.speed = moveSpeed;
-        agent.acceleration = 2f;
-        //agent.stoppingDistance = 0.25f;
-        agent.stoppingDistance = 0.1f;
-        agent.autoBraking = true;
-        agent.radius = 0.2f;
-        agent.height = 0.2f;
-        //agent.avoidancePriority = 1;
-        //agent.avoidancePriority = Random.Range(0,99);
-        agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+        this.agent = gameObject.AddComponent<NavMeshAgent>();
+        this.aIMoveComponent = GetComponent<AIMoveComponent>();
 
-        //下面两行是为了使用navMesh2D(即navMeshPlus)所必须做的设置，因为该脚本对navMesh的导航坐标系(xz)做了翻转(xy)，不再能使用其自身的旋转方法
-        agent.updateRotation = false;
-        agent.updateUpAxis = false;
-        //下面两行是使用重写的转向方法，弥补了navMesh自身的转向方法的失效
-        Rotate_Smoothly rotateSmooth = gameObject.AddComponent<Rotate_Smoothly>();
-        rotateSmooth.rotateSpeed = angleSpeed;
+        aIMoveComponent.Ctor(agent);
+
     }
-
-    protected void continuelyGoto(Vector3 position)
+    protected void AIGoto(Vector3 target)
     {
-        agent.SetDestination(position);
+        aIMoveComponent.MoveTo(target);
     }
+
+
     public void Follow()
     {
         beginGoto();
         if (theFollowTarget != null)
         {
-            continuelyGoto(theFollowTarget.position);
+            AIGoto(theFollowTarget.position);
         }
     }
     public void Seek()
     {
         beginGoto();
-        continuelyGoto(theSeekTarget);
+        AIGoto(theSeekTarget);
     }
     public void Patrol()
     {
         beginGoto();
-        continuelyGoto(thePatrolTarget);
+        AIGoto(thePatrolTarget);
     }
     public void BackToPatrol()
     {
         beginGoto();
         SearchClosestTarget();
-        continuelyGoto(thePatrolTarget);
+        AIGoto(thePatrolTarget);
     }
 
     public void Stop()
     {
-        agent.isStopped = true;
+        aIMoveComponent.agent.isStopped = true;
     }
     protected void beginGoto()
     {
-        agent.isStopped = false;
+        aIMoveComponent.agent.isStopped = false;
     }
 
     //-------------------------------------------------------------------------
