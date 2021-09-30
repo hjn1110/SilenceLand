@@ -2,13 +2,41 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+public interface ITest
+{
+
+}
+
+public class G1 : ITest
+{
+
+}
+public class G2 : ITest
+{
+
+}
+
+
+
+
+
+
 public class TestSample : MonoBehaviour
 {
+    void test22(ISmellComponent smellComponent,IPlayer player) 
+    {
+        smellComponent.SmellPlayer(player);
+    }
 
     private void Awake()
     {
         //ISmellComponent smellComponent = new SmellComponent();
-        SmellComponent smellComponent = new SmellComponent();
+        //SmellComponent smellComponent = new SmellComponent();
+        ISmellComponent smellComponent = gameObject.AddComponent<SmellComponent>();
+
+        ISmellComponent ss = gameObject.GetComponent<TestSample2>();
 
         ZombieEnemy zombieEnemy = new ZombieEnemy();
         zombieEnemy.SetDependance(smellComponent);
@@ -18,11 +46,16 @@ public class TestSample : MonoBehaviour
 
         zombieEnemy.SmellPlayer(player);
 
+        test22(ss, player);
+
     }
 
 
 
 }
+
+
+
 
 
 public interface ISmellComponent
@@ -44,7 +77,9 @@ public class mPlayer : IPlayer
 }
 
 
-public class SmellComponent:ISmellComponent
+public class SmellComponent : MonoBehaviour,ISmellComponent
+//public class SmellComponent : ISmellComponent
+
 {
     public void SmellPlayer(IPlayer player)
     {

@@ -15,7 +15,7 @@ public class FSMSystem
         currentFSMState.Act(npc);
         currentFSMState.Reason(npc);
     }
-
+    
 
 
     public void AddState(FSMState s)

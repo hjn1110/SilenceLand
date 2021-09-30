@@ -11,8 +11,6 @@ public class ZombiePatrolState : FSMState
       
 
 
-
-
     }
 
     public override void Act(GameObject enemy)

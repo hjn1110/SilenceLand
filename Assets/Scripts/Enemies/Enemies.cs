@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Silent.MapObject.SearchObject;
+using Sirenix.OdinInspector;
 
-public abstract class Enemies : MonoBehaviour
+public abstract class Enemies : SerializedMonoBehaviour
 {
     //可配置属性 
     protected float hearing { get { return setting.hearing; } }//听力
@@ -16,7 +17,15 @@ public abstract class Enemies : MonoBehaviour
     protected float angleSpeed { get { return setting.angleSpeed; } set { angleSpeed = setting.angleSpeed; } }//转身速度
     protected float hearingReduceSpeed { get { return setting.hearingReduceSpeed; } }//听力记忆衰减速度
     protected float hearingDelayClearTime { get { return setting.hearingDelayClearTime; } }
-    
+
+    [ShowInInspector]
+    public ITest[] iTest;
+    [ShowInInspector]
+    public ITest AAA;
+
+    public string typeName;
+
+
 
     //字段配置表
     protected GlobalSettings globalSetting;
@@ -235,8 +244,21 @@ public abstract class Enemies : MonoBehaviour
 
     AIMoveComponent aIMoveComponent;
 
+
+    /*
+    public void SetDependance(AIMoveComponent aIMoveComponent)
+    {
+        this.aIMoveComponent = aIMoveComponent;
+    }
+    */
+
+
     protected void AddNavMeshAgent()
     {
+
+       
+
+
         this.agent = gameObject.AddComponent<NavMeshAgent>();
         this.aIMoveComponent = GetComponent<AIMoveComponent>();
 

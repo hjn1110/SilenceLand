@@ -3,14 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+public interface IAIMoveComponent:IMoveComponent
+{
+
+
+}
 public class AIMoveComponent : MonoBehaviour, IAIMoveComponent
 {
-    public void MoveTo(Vector3 target)
+    public AIMoveComponent(NavMeshAgentSetting agentSetting)
     {
-        agent.SetDestination(target);
+
     }
 
-    public void Move()
+     
+
+    public void MoveTo(Vector3 target)
+    {
+        Enable();
+        agent.SetDestination(target);
+
+    }
+
+    public void Enable()
     {
         agent.isStopped = false;
 
