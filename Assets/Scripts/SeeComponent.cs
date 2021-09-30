@@ -6,17 +6,18 @@ using UnityEngine;
 
 public interface ISeeComponent
 {
-    //bool SeePlayer { get; set; }//视觉判断/追踪依据
+    //由Entity调用
     bool Lost { get; }//丢失判断
-
     Transform SeeTarget();
+}
 
-    //void Follow();//追踪
-
+public interface ISeeComponentEditor
+{
+    //由Trigger调用
     void AddViewTarget(Transform targetTrans);
     void RemoveViewTarget(Transform targetTrans);
-
 }
+
 
 [CreateAssetMenu]
 public class SeeSetting : ScriptableObject
@@ -24,35 +25,33 @@ public class SeeSetting : ScriptableObject
 
 }
 
-public class SeeComponent : ISeeComponent
+public class SeeComponent : ISeeComponent, ISeeComponentEditor
 {
     public SeeComponent(SeeSetting seeSetting,Transform parent)
     {
         this.parent = parent;
+        followTargetList = new List<Transform>();
     }
 
     Transform parent;
 
-    public bool SeePlayer { get { if (visionTarget == null) { return false; } else { if ((visionTarget != null) && (IfSeeDirectly(visionTarget,parent))) { return true; } else return false; } } }//视觉判断/追踪依据
-    public bool Lost { get { if (visionTarget == null) { return true; } else { return false; } } }
+    public bool SeePlayer { get { if (SeeTarget() == null) { return false; } else { if ((SeeTarget() != null) && (IfSeeDirectly(SeeTarget(), parent))) { return true; } else return false; } } }//视觉判断/追踪依据
+    public bool Lost { get { if (SeeTarget() == null) { return true; } else { return false; } } }
 
 
     //视觉状态属性参数字段
 
-    private Transform visionTarget;//通过视觉获取到的追踪目标
     private List<Transform> followTargetList;//储存看到的对象
 
     public int vision { get; set; }//视力
     protected int fleeVision { get; set; }//逃逸视力
     protected int patrolVision { get; set; }
 
-
-    Transform trans;
+     
 
 
     //视觉Raycast参数
-    private Global global;
-    private GameObject player { get { return global.player; } }
+    //private GameObject player { get { return Global.instance.player; } }
     private ContactFilter2D filter;
     private LayerMask seeObbMask;
     private int hitNum;
@@ -101,7 +100,7 @@ public class SeeComponent : ISeeComponent
     {
         if ((followTargetList != null) && (followTargetList.Count != 0))
         {
-            return TargetFilter(trans);
+            return TargetFilter(parent);
         }
         else
         {

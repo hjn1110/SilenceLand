@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class FleeField : MonoBehaviour
 {
-    ISeeComponent seeComponent;
+    ISeeComponentEditor seeComponentEditor;
 
     public void Ctor(SeeComponent seeComponent)
     {
-        this.seeComponent = seeComponent;
+        this.seeComponentEditor = seeComponent;
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -20,7 +20,7 @@ public class FleeField : MonoBehaviour
             //Debug.Log("移除监视" + collision.gameObject.name);
             //向父类中的Enemies移除targetTrans
 
-            seeComponent.RemoveViewTarget(collision.transform);
+            seeComponentEditor.RemoveViewTarget(collision.transform);
 
         }
     }

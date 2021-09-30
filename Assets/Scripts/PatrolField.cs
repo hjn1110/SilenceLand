@@ -6,13 +6,13 @@ using System;
 public class PatrolField : MonoBehaviour
 {
     Component parentComponent;
-    PatrolComponent patrolComponent;
+    IPatrolComponentEditor patrolComponentEditor;
 
      
 
-    public void Ctor(PatrolComponent patrolComponent)
+    public void Ctor(IPatrolComponentEditor patrolComponent)
     {
-        this.patrolComponent = patrolComponent;
+        this.patrolComponentEditor = patrolComponent;
 
        
     }
@@ -27,7 +27,7 @@ public class PatrolField : MonoBehaviour
         {
              
             gameObject.GetComponentsInParent<Enemies>()[0].NodsInView.AddLast(collision.gameObject.GetComponent<PathNods>());
-            //patrolComponent.RefreshNodsCache(collision.gameObject.GetComponent<PathNods>());
+            //patrolComponentEditor.RefreshNodsCache(collision.gameObject.GetComponent<PathNods>());
 
 
 
@@ -40,8 +40,8 @@ public class PatrolField : MonoBehaviour
             gameObject.GetComponentsInParent<Enemies>()[0].NodsInView.Remove(collision.gameObject.GetComponent<PathNods>());
             gameObject.GetComponentsInParent<Enemies>()[0].theLastNodInView = collision.gameObject.GetComponent<PathNods>();
 
-            //patrolComponent.ClearNodsCache(collision.gameObject.GetComponent<PathNods>());
-            //patrolComponent.SetLastNod(collision.gameObject.GetComponent<PathNods>());
+            //patrolComponentEditor.ClearNodsCache(collision.gameObject.GetComponent<PathNods>());
+            //patrolComponentEditor.SetLastNod(collision.gameObject.GetComponent<PathNods>());
 
         }
     }

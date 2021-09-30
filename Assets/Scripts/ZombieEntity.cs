@@ -13,8 +13,6 @@ public class ZombieEntity : MonoBehaviour
     public HearSetting hearSetting;
     public ZombieFSMSetting fsmSetting;
 
-    private PathsManager pathsManager;
-
 
     //路径属性
     [HideInInspector]
@@ -30,7 +28,7 @@ public class ZombieEntity : MonoBehaviour
     //IMoveComponent moveComponent;
     //AIMove组件
     //IAIMoveComponent aIMoveComponent;
-    IMoveComponent aIMoveComponent;
+    IMoveComponent AIMoveComponent;
     //See组件
     ISeeComponent seeComponent;
     //Hear组件
@@ -38,7 +36,7 @@ public class ZombieEntity : MonoBehaviour
     //Patrol组件
     IPatrolComponent patrolComponent;
     //Follow组件
-    IFollowCompenent followCompenent;
+    IFollowCompenent followComponent;
     //Seek组件
     ISeekComponent seekComponent;
 
@@ -53,16 +51,21 @@ public class ZombieEntity : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        aIMoveComponent = new AIMoveComponent(agentSetting);
+        //零级行为层：触发器
+        seeComponent = new SeeComponent(seeSetting, transform);
+        hearComponent = new HearComponent(hearSetting);
+
+        //一级行为层
+        AIMoveComponent = new AIMoveComponent(agentSetting);
         //moveComponent = new MoveComponent(moveSetting);
 
+        //二级行为层：行为组合，依赖并调用一级行为层
+        followComponent = new FollowComponent(AIMoveComponent);
+        seekComponent = new SeekComponent(AIMoveComponent);
+        patrolComponent = new PatrolComponent(AIMoveComponent,transform);
 
-        seeComponent = new SeeComponent(seeSetting,transform);
-        hearComponent = new HearComponent(hearSetting);
-        zombieFSM = new ZombieFSM(this,fsmSetting);
-        //patrolComponent = new PatrolComponent(moveSetting,transform);
-        followCompenent = new FollowComponent(aIMoveComponent);
-        seekComponent = new SeekComponent(aIMoveComponent);
+        //逻辑层：行为组织,二级行为层间的转换机制
+        zombieFSM = new ZombieFSM(this, fsmSetting);
 
     }
 
@@ -74,7 +77,7 @@ public class ZombieEntity : MonoBehaviour
     {
         if (seeComponent.SeeTarget() != null)
         {
-            followCompenent.Follow(seeComponent.SeeTarget());
+            followComponent.Follow(seeComponent.SeeTarget());
         }
     }
     public void Seek()
@@ -83,15 +86,14 @@ public class ZombieEntity : MonoBehaviour
         {
             seekComponent.Seek(hearComponent.HearTarget);
         }
-        
     }
     public void Patrol()
     {
-        //patrolComponent.Patrol();
+        patrolComponent.Patrol();
     }
     public void ReturnToPatrol()
     {
-        //patrolComponent.Return();
+        patrolComponent.Return();
     }
 
 

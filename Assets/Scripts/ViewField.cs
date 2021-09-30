@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class ViewField : MonoBehaviour
 {
-    ISeeComponent seeComponent;
+    ISeeComponentEditor seeComponentEditor;
 
     public void Ctor(SeeComponent seeComponent)
     {
-        this.seeComponent = seeComponent;
+        this.seeComponentEditor = seeComponent;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -20,7 +20,7 @@ public class ViewField : MonoBehaviour
             //Debug.Log("准备传递消息："+ collision.transform);
             //SendMessageUpwards("AddViewTarget", collision.transform);
 
-            seeComponent.AddViewTarget(collision.transform);
+            seeComponentEditor.AddViewTarget(collision.transform);
 
 
             //Debug.Log("注册监视"+collision.gameObject.name);
