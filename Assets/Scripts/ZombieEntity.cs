@@ -6,24 +6,16 @@ using UnityEngine;
 public class ZombieEntity : MonoBehaviour
 {
     
-    //数据层
+    //数据层(ScritableObject)
     public MoveSetting moveSetting;
     public NavMeshAgentSetting agentSetting;
     public SeeSetting seeSetting;
     public HearSetting hearSetting;
+    public PatrolSetting patrolSetting;
     public ZombieFSMSetting fsmSetting;
 
 
-    //路径属性
-    [HideInInspector]
-    public Vector3 thePatrolTarget;//巡逻指向的下一个路线目标
-    [HideInInspector]
-    public LinkedList<PathNods> NodsInView;//用于存储当前视野中的nods
-    [HideInInspector]
-    public PathNods theLastNodInView;//用于存储最近一次看到的且已不在NodsInView中的nod
-
-
-    //行为层
+    //行为层(Component)
     //Move组件
     //IMoveComponent moveComponent;
     //AIMove组件
@@ -40,14 +32,13 @@ public class ZombieEntity : MonoBehaviour
     //Seek组件
     ISeekComponent seekComponent;
 
-    //逻辑层
+    //逻辑层(FSM)
     //状态机
     IZombieFSM zombieFSM;
 
 
     /// <summary>
-    /// 创建组件
-    /// 注入依赖
+    /// 创建组件、依赖注入
     /// </summary>
     private void Start()
     {
@@ -62,7 +53,7 @@ public class ZombieEntity : MonoBehaviour
         //二级行为层：行为组合，依赖并调用一级行为层
         followComponent = new FollowComponent(AIMoveComponent);
         seekComponent = new SeekComponent(AIMoveComponent);
-        patrolComponent = new PatrolComponent(AIMoveComponent,transform);
+        patrolComponent = new PatrolComponent(patrolSetting,AIMoveComponent, transform);
 
         //逻辑层：行为组织,二级行为层间的转换机制
         zombieFSM = new ZombieFSM(this, fsmSetting);

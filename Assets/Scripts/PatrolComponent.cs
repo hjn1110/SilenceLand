@@ -36,10 +36,15 @@ public class PatrolComponent : IPatrolComponent, IPatrolComponentEditor
     [HideInInspector]
     public PathNods theLastNodInView;//用于存储最近一次看到的且已不在NodsInView中的nod
 
-    public PatrolComponent(IMoveComponent moveComponent, Transform parent)
+    public PatrolComponent(PatrolSetting patrolSetting,IMoveComponent moveComponent, Transform parent)
     {
         this.moveComponent = moveComponent;
         this.parent = parent;
+
+        GameObject PatrolViewField = TriggerCreater.instance.AddTriggerObject(patrolSetting.patrolVision, parent, "PatrolField");
+        PatrolViewField.AddComponent<PatrolField>().Ctor(this);
+
+        initClosestTarget();
     }
 
     public void Patrol()
@@ -48,11 +53,9 @@ public class PatrolComponent : IPatrolComponent, IPatrolComponentEditor
     }
     public void Return()
     {
-        SearchClosestTarget();
+        RefindTarget();
         moveComponent.MoveTo(thePatrolTarget);
-
     }
-
     public void RefreshNodsCache(PathNods nod)
     {
         NodsInView.AddLast(nod);
@@ -70,15 +73,6 @@ public class PatrolComponent : IPatrolComponent, IPatrolComponentEditor
 
 
 
-    void Ctor(Transform parent, PatrolSetting patrolSetting)
-    {
-        //加载Patrol搜寻path视野Trigger
-        GameObject PatrolViewField = TriggerCreater.instance.AddTriggerObject(patrolSetting.patrolVision, parent, "PatrolField");
-        PatrolViewField.AddComponent<PatrolField>().Ctor(this);
-    }
-
-
-
     public void initClosestTarget()
     {
         if (PathsManager.instance.AllNods == null)
@@ -86,12 +80,12 @@ public class PatrolComponent : IPatrolComponent, IPatrolComponentEditor
             Debug.LogError("AllNods为空");
         }
         Debug.Log("初始化Patrol最近目标");
-        thePatrolTarget = theClosestNodOfList(PathsManager.instance.AllNods, parent.position).transform.position;
+        thePatrolTarget = NearistNod(PathsManager.instance.AllNods, parent.position).transform.position;
     }
 
 
 
-    public void SearchClosestTarget()
+    public void RefindTarget()
     {
         if (thePatrolTarget != Vector3.zero)
         {
@@ -108,16 +102,16 @@ public class PatrolComponent : IPatrolComponent, IPatrolComponentEditor
 
          if ((NodsInView != null) && (NodsInView.Count != 0))
         {
-            Debug.Log("执行算法1:视野中存在目标，前往:" + theClosestNodOfLinkedList(NodsInView, parent.position).gameObject.name);
-            thePatrolTarget = theClosestNodOfLinkedList(NodsInView, parent.position).transform.position;
+            Debug.Log("执行算法1:视野中存在目标，前往:" + NearistNod(NodsInView, parent.position).gameObject.name);
+            thePatrolTarget = NearistNod(NodsInView, parent.position).transform.position;
         }
         else
 
 
         if ((PathsManager.instance.AllNods != null) && (PathsManager.instance.AllNods.Count != 0))
         {
-            thePatrolTarget = theClosestNodOfList(PathsManager.instance.AllNods, parent.position).transform.position;
-            Debug.Log("执行算法4:搜索全体nods中最近点，前往:" + theClosestNodOfList(PathsManager.instance.AllNods, parent.position).gameObject.name);
+            thePatrolTarget = NearistNod(PathsManager.instance.AllNods, parent.position).transform.position;
+            Debug.Log("执行算法4:搜索全体nods中最近点，前往:" + NearistNod(PathsManager.instance.AllNods, parent.position).gameObject.name);
 
         }
 
@@ -125,7 +119,7 @@ public class PatrolComponent : IPatrolComponent, IPatrolComponentEditor
     //工具方法，返回一个List中距离自己最近的nod
     //待优化：用坐标平方之和代替Vector2.Distance进行比较，减少平方根计算
     //待优化：成员用gameobject代替类，这样可以把距离比较的方法封装成一个通用的
-    private PathNods theClosestNodOfLinkedList(LinkedList<PathNods> nods, Vector3 pos)
+    private PathNods NearistNod(LinkedList<PathNods> nods, Vector3 pos)
     {
         float dis = Mathf.Infinity;
         PathNods target = null;
@@ -145,7 +139,7 @@ public class PatrolComponent : IPatrolComponent, IPatrolComponentEditor
     //工具方法，返回一个List中距离自己最近的nod
     //待优化：用坐标平方之和代替Vector2.Distance进行比较，减少平方根计算
     //待优化：成员用gameobject代替类，这样可以把距离比较的方法封装成一个通用的
-    private PathNods theClosestNodOfList(List<PathNods> nods, Vector3 pos)
+    private PathNods NearistNod(List<PathNods> nods, Vector3 pos)
     {
         float dis = Mathf.Infinity;
         PathNods target = null;
