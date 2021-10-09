@@ -8,6 +8,7 @@ public interface IPatrolComponent
     //由Entity调用
     void Patrol();
     void Return();
+    
 }
 
 public interface IPatrolComponentEditor
@@ -16,13 +17,18 @@ public interface IPatrolComponentEditor
     void RefreshNodsCache(PathNods nods);
     void ClearNodsCache(PathNods nods);
     void SetLastNod(PathNods nod);
+    void SetNextTarget(PathNods nod);
+    Vector3 thePatrolTarget { set; get; }
+
 }
 
 
 [CreateAssetMenu]
 public class PatrolSetting : ScriptableObject
 {
-    public float patrolVision;
+    public int patrolVision=10;
+
+
 }
 
 public class PatrolComponent : IPatrolComponent, IPatrolComponentEditor
@@ -30,7 +36,7 @@ public class PatrolComponent : IPatrolComponent, IPatrolComponentEditor
     IMoveComponent moveComponent;
     Transform parent;
     [HideInInspector]
-    public Vector3 thePatrolTarget;//巡逻指向的下一个路线目标
+    public Vector3 thePatrolTarget { set; get; }//巡逻指向的下一个路线目标
     [HideInInspector]
     public LinkedList<PathNods> NodsInView { get; set; }//用于存储当前视野中的nods
     [HideInInspector]
@@ -43,6 +49,7 @@ public class PatrolComponent : IPatrolComponent, IPatrolComponentEditor
 
         GameObject PatrolViewField = TriggerCreater.instance.AddTriggerObject(patrolSetting.patrolVision, parent, "PatrolField");
         PatrolViewField.AddComponent<PatrolField>().Ctor(this);
+        NodsInView = new LinkedList<PathNods>();
 
         initClosestTarget();
     }
@@ -58,6 +65,10 @@ public class PatrolComponent : IPatrolComponent, IPatrolComponentEditor
     }
     public void RefreshNodsCache(PathNods nod)
     {
+        if (NodsInView == null)
+        {
+            Debug.LogError("视野list获取失败");
+        }
         NodsInView.AddLast(nod);
     }
     public void ClearNodsCache(PathNods nod)
@@ -70,7 +81,15 @@ public class PatrolComponent : IPatrolComponent, IPatrolComponentEditor
     }
 
 
+    public void SetNextTarget(PathNods nod)
+    {
+        Debug.Log("抵达目标，切换下个目标");
+        if (nod.nextNods != null)
+        {
+            thePatrolTarget = nod.nextNods.transform.position;
 
+        }
+    }
 
 
     public void initClosestTarget()

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+/*
 [CreateAssetMenu]
 public class ZombieFSMSetting : ScriptableObject
 {
@@ -10,27 +10,30 @@ public class ZombieFSMSetting : ScriptableObject
     public StateID defaultState = StateID.Pend;
 
 }
+*/
 
 interface IZombieFSM
 {
     void Update(GameObject gameObject);
+    //状态指针
+    StateID currentState { get; set; }
 }
 
 public class ZombieFSM:IZombieFSM
 {
-    public ZombieFSM(ZombieEntity zombieEntity, ZombieFSMSetting fsmSetting)
+    public ZombieFSM(ZombieEntity zombieEntity, StateID defaultState)
     {
-        this.fsmSetting = fsmSetting;
-        Ctor(fsmSetting.defaultState);
+        //this.fsmSetting = fsmSetting;
+        Ctor(defaultState);
     }
 
     //状态机
     protected FSMSystem fsm;
 
     //状态指针
-    public StateID currentState;
+    public StateID currentState { get; set; }
 
-    public ZombieFSMSetting fsmSetting;
+    //public ZombieFSMSetting fsmSetting;
 
     /// <summary>
     /// 注册状态机

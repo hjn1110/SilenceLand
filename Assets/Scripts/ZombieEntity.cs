@@ -1,19 +1,36 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-
-public class ZombieEntity : MonoBehaviour
+public abstract class Enemy : MonoBehaviour
 {
-    
+    public abstract void Stop();
+    public abstract Transform SeeTarget();
+    public abstract bool Hear();
+    public abstract void Follow();
+    public abstract void Seek();
+    public abstract void Patrol();
+    public abstract void ReturnToPatrol();
+    public abstract void AddSoundSourceCache(Vector3 soundSourcePos, float soundVolume);
+    public abstract void HearingDelayClear(Vector2 target);
+    public abstract IPatrolComponent patrolComponent { get; set; }
+
+}
+
+
+public class ZombieEntity : Enemy
+{
     //数据层(ScritableObject)
     public MoveSetting moveSetting;
     public NavMeshAgentSetting agentSetting;
     public SeeSetting seeSetting;
     public HearSetting hearSetting;
     public PatrolSetting patrolSetting;
-    public ZombieFSMSetting fsmSetting;
+    //public ZombieFSMSetting fsmSetting;
 
+    public NavMeshAgent agent;
+    
 
     //行为层(Component)
     //Move组件
@@ -26,7 +43,7 @@ public class ZombieEntity : MonoBehaviour
     //Hear组件
     IHearComponent hearComponent;
     //Patrol组件
-    IPatrolComponent patrolComponent;
+    public override IPatrolComponent patrolComponent { get; set; }
     //Follow组件
     IFollowCompenent followComponent;
     //Seek组件
@@ -35,6 +52,9 @@ public class ZombieEntity : MonoBehaviour
     //逻辑层(FSM)
     //状态机
     IZombieFSM zombieFSM;
+    public StateID defaultState = StateID.Pend;
+    //状态指针
+    public StateID currentState = StateID.Pend;
 
 
     /// <summary>
@@ -47,7 +67,8 @@ public class ZombieEntity : MonoBehaviour
         hearComponent = new HearComponent(hearSetting);
 
         //一级行为层
-        AIMoveComponent = new AIMoveComponent(agentSetting);
+        agent = gameObject.AddComponent<NavMeshAgent>();
+        AIMoveComponent = new AIMoveComponent(agentSetting,agent);
         //moveComponent = new MoveComponent(moveSetting);
 
         //二级行为层：行为组合，依赖并调用一级行为层
@@ -56,33 +77,70 @@ public class ZombieEntity : MonoBehaviour
         patrolComponent = new PatrolComponent(patrolSetting,AIMoveComponent, transform);
 
         //逻辑层：行为组织,二级行为层间的转换机制
-        zombieFSM = new ZombieFSM(this, fsmSetting);
+        zombieFSM = new ZombieFSM(this, defaultState);
 
+
+        this.currentState = zombieFSM.currentState;
+
+        TriggerCreater.instance.AddRidWithTemplate1(gameObject);
+
+        
     }
 
 
     /// <summary>
     /// 行为层实现
     /// </summary>
-    public void Follow()
+    ///
+    public override void Stop()
+    {
+        AIMoveComponent.Stop();
+    }
+
+    public override Transform SeeTarget()
+    {
+        return seeComponent.SeeTarget();
+    }
+    public override bool Hear()
+    {
+        return hearComponent.Hear();
+    }
+
+    public override void AddSoundSourceCache(Vector3 soundSourcePos, float soundVolume)
+    {
+        hearComponent.AddSoundSourceCache(soundSourcePos, soundVolume);
+    }
+
+    public override void HearingDelayClear(Vector2 target)
+    {
+        hearComponent.HearingDelayClear(target);
+
+    }
+    /*
+    public override void SetNextTarget(PathNods nod)
+    {
+        patrolComponent.SetNextTarget(nod);
+    }
+    */
+    public override void Follow()
     {
         if (seeComponent.SeeTarget() != null)
         {
             followComponent.Follow(seeComponent.SeeTarget());
         }
     }
-    public void Seek()
+    public override void Seek()
     {
         if (hearComponent.Hear())
         {
             seekComponent.Seek(hearComponent.HearTarget);
         }
     }
-    public void Patrol()
+    public override void Patrol()
     {
         patrolComponent.Patrol();
     }
-    public void ReturnToPatrol()
+    public override void ReturnToPatrol()
     {
         patrolComponent.Return();
     }

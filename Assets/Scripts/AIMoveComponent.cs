@@ -5,14 +5,15 @@ using UnityEngine.AI;
 
 public interface IAIMoveComponent:IMoveComponent
 {
-
+    
 
 }
-public class AIMoveComponent : MonoBehaviour, IAIMoveComponent
+public class AIMoveComponent : IAIMoveComponent
 {
-    public AIMoveComponent(NavMeshAgentSetting agentSetting)
+    public AIMoveComponent(NavMeshAgentSetting agentSetting, NavMeshAgent agent)
     {
-
+        this.agentSetting = agentSetting;
+        Ctor(agent);
     }
 
      
@@ -35,6 +36,7 @@ public class AIMoveComponent : MonoBehaviour, IAIMoveComponent
     public NavMeshAgent agent { get; private set; }
     public NavMeshAgentSetting agentSetting;
      
+
 
     public void Ctor(NavMeshAgent agent)
     {

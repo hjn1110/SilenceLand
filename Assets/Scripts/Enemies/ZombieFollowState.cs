@@ -18,13 +18,13 @@ public class ZombieFollowState : FSMState
     public override void Act(GameObject enemy)
     {
         enemy.GetComponent<SpriteRenderer>().color = new Color(0, 1, 1, 1);
-        enemy.GetComponent<Zombie>().Follow();
+        enemy.GetComponent<ZombieEntity>().Follow();
 
     }
 
     public override void Reason(GameObject enemy)
     {
-        
+        /*
         //未见则巡
         if ((enemy.GetComponent<Zombie>().LostPlayer))
         {
@@ -32,6 +32,13 @@ public class ZombieFollowState : FSMState
             enemy.GetComponent<Zombie>().BackToPatrol();
             fsm.PerformTransition(Transition.LostPlayer);
         }
+        */
 
+        if (enemy.GetComponent<ZombieEntity>().SeeTarget() == null)
+        {
+            enemy.GetComponent<ZombieEntity>().ReturnToPatrol();
+            fsm.PerformTransition(Transition.LostPlayer);
+
+        }
     }
 }

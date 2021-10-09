@@ -44,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
                 //trans.position += normalSpeed * speed * Time.smoothDeltaTime;
                 rigid.velocity += (Vector2) normalSpeed * speed * Time.smoothDeltaTime;
                 //rigid.AddForce(normalSpeed * speed*100);
-                Debug.Log("速度=" + speed);
+                //Debug.Log("速度=" + speed);
 
             }
 
@@ -55,7 +55,7 @@ public class PlayerMovement : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.LeftShift))
             {
                 //speed = setting.moveSpeedHolding;
-                Debug.Log("Hold速度="+speed);
+                //Debug.Log("Hold速度="+speed);
                 ani.SetBool("Hold", true);
             }
             if (Input.GetKeyUp(KeyCode.LeftShift))

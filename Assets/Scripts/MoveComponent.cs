@@ -4,7 +4,7 @@ using UnityEngine;
 public interface IMoveComponent
 {
     void MoveTo(Vector3 target);
-
+    void Stop();
 }
 
 [CreateAssetMenu]

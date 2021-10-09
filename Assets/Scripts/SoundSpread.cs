@@ -153,7 +153,7 @@ public class SoundSpread : MonoBehaviour
         {
             volume = SoundList[enemyTilePos];
             Debug.Log("监听者听到:"+enemyTrans.gameObject.name+",音量="+ volume);
-            enemyTrans.gameObject.GetComponent<Enemies>().Hear(gameObject.transform.position, volume);
+            enemyTrans.gameObject.GetComponent<Enemy>().AddSoundSourceCache(gameObject.transform.position, volume);
         }
         else
         {

@@ -22,6 +22,8 @@ public interface ISeeComponentEditor
 [CreateAssetMenu]
 public class SeeSetting : ScriptableObject
 {
+    public int vision = 5;
+    public int fleeVision = 10;
 
 }
 
@@ -31,6 +33,7 @@ public class SeeComponent : ISeeComponent, ISeeComponentEditor
     {
         this.parent = parent;
         followTargetList = new List<Transform>();
+        Ctor(parent, seeSetting.fleeVision, seeSetting.vision);
     }
 
     Transform parent;
@@ -77,7 +80,7 @@ public class SeeComponent : ISeeComponent, ISeeComponentEditor
     
 
     //初始化视觉Field所需Trigger
-    protected void Ctor(Transform transform,float fleeVision,float vision)
+    protected void Ctor(Transform transform,int fleeVision,int vision)
     {
         //待优化：现有的视野是圆形，但应该设计成锥形，否则不能做潜行背刺
 

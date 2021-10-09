@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agentTypeID: 0
   baseOffset: 0.1
-  moveSpeed: 0.5
-  angleSpeed: 10
+  moveSpeed: 0.2
+  angleSpeed: 400
   acceleration: 2
   stoppingDistance: 0.1
   autoBraking: 1

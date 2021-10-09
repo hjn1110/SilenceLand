@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-
+/*
 public interface ITest
 {
 
@@ -106,7 +106,7 @@ public class ZombieEnemy:ISmellComponent
 }
 
 
-
+*/
 
 
 

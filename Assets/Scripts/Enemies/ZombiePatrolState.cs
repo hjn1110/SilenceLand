@@ -16,12 +16,15 @@ public class ZombiePatrolState : FSMState
     public override void Act(GameObject enemy)
     {
         enemy.GetComponent<SpriteRenderer>().color = new Color(0, 1, 0, 1);
-        enemy.GetComponent<Zombie>().Patrol();
-         
+        //enemy.GetComponent<Zombie>().Patrol();
+        enemy.GetComponent<ZombieEntity>().Patrol();
+
+
     }
 
     public override void Reason(GameObject enemy)
     {
+        /*
         //凡见则追
         if (enemy.GetComponent<Zombie>().SeePlayer)
         {
@@ -33,6 +36,20 @@ public class ZombiePatrolState : FSMState
         {
             fsm.PerformTransition(Transition.Hear);
         }
+        */
+
+
+        if (enemy.GetComponent<ZombieEntity>().SeeTarget() != null)
+        {
+            fsm.PerformTransition(Transition.SeePlayer);
+
+        }
+        if (enemy.GetComponent<ZombieEntity>().Hear() && enemy.GetComponent<ZombieEntity>().SeeTarget() == null)
+        {
+            fsm.PerformTransition(Transition.Hear);
+
+        }
+
 
     }
 }

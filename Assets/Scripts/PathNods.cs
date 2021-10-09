@@ -34,10 +34,13 @@ public class PathNods : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
+
         if (collision.CompareTag("Enemy"))
         {
-            if(collision.GetComponent<Enemies>().thePatrolTarget == transform.position)
-            collision.GetComponent<Enemies>().SetNextTarget(this);
+            IPatrolComponentEditor patrolComponentEditor = (IPatrolComponentEditor)collision.GetComponent<Enemy>().patrolComponent;
+
+            if (patrolComponentEditor.thePatrolTarget == transform.position)
+                patrolComponentEditor.SetNextTarget(this);
         }
     }
      

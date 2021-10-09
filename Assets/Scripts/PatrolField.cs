@@ -8,13 +8,14 @@ public class PatrolField : MonoBehaviour
     Component parentComponent;
     IPatrolComponentEditor patrolComponentEditor;
 
-     
+
+
 
     public void Ctor(IPatrolComponentEditor patrolComponent)
     {
         this.patrolComponentEditor = patrolComponent;
+        
 
-       
     }
 
 
@@ -25,9 +26,12 @@ public class PatrolField : MonoBehaviour
     {
         if (collision.CompareTag("PathNod"))
         {
-             
-            gameObject.GetComponentsInParent<Enemies>()[0].NodsInView.AddLast(collision.gameObject.GetComponent<PathNods>());
-            //patrolComponentEditor.RefreshNodsCache(collision.gameObject.GetComponent<PathNods>());
+            if (patrolComponentEditor == null)
+            {
+                Debug.LogError("抵达巡逻点，但获取巡逻组件失败");
+            }
+            //gameObject.GetComponentsInParent<Enemies>()[0].NodsInView.AddLast(collision.gameObject.GetComponent<PathNods>());
+            patrolComponentEditor.RefreshNodsCache(collision.gameObject.GetComponent<PathNods>());
 
 
 
@@ -37,11 +41,11 @@ public class PatrolField : MonoBehaviour
     {
         if (collision.CompareTag("PathNod"))
         {
-            gameObject.GetComponentsInParent<Enemies>()[0].NodsInView.Remove(collision.gameObject.GetComponent<PathNods>());
-            gameObject.GetComponentsInParent<Enemies>()[0].theLastNodInView = collision.gameObject.GetComponent<PathNods>();
+            //gameObject.GetComponentsInParent<Enemies>()[0].NodsInView.Remove(collision.gameObject.GetComponent<PathNods>());
+            //gameObject.GetComponentsInParent<Enemies>()[0].theLastNodInView = collision.gameObject.GetComponent<PathNods>();
 
-            //patrolComponentEditor.ClearNodsCache(collision.gameObject.GetComponent<PathNods>());
-            //patrolComponentEditor.SetLastNod(collision.gameObject.GetComponent<PathNods>());
+            patrolComponentEditor.ClearNodsCache(collision.gameObject.GetComponent<PathNods>());
+            patrolComponentEditor.SetLastNod(collision.gameObject.GetComponent<PathNods>());
 
         }
     }

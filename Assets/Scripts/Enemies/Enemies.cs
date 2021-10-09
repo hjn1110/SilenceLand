@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Silent.MapObject.SearchObject;
 using Sirenix.OdinInspector;
-
+/*
 public abstract class Enemies : SerializedMonoBehaviour
 {
     //可配置属性 
@@ -245,12 +245,7 @@ public abstract class Enemies : SerializedMonoBehaviour
     AIMoveComponent aIMoveComponent;
 
 
-    /*
-    public void SetDependance(AIMoveComponent aIMoveComponent)
-    {
-        this.aIMoveComponent = aIMoveComponent;
-    }
-    */
+    
 
 
     protected void AddNavMeshAgent()
@@ -512,3 +507,4 @@ public abstract class Enemies : SerializedMonoBehaviour
     //-------------------------------------------------------------------------
 
 }
+*/
