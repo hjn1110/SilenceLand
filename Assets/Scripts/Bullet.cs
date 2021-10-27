@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    private float speed = 20f;
+    public float speed = 20f;
     private Global global;
     private GameObject player;
     public Rigidbody2D rigid;
     public ParticleSystem explode;
-    private SpriteRenderer sprite;
+    //private SpriteRenderer sprite;
     //private SoundSpread sound;
     private SoundSpreadManager soundManager;
+    public TrailRenderer trail;
 
     private void Start()
     {
@@ -25,11 +26,12 @@ public class Bullet : MonoBehaviour
         global = Global.instance;
         soundManager = SoundSpreadManager.instance;
         player = global.player;
-        sprite = GetComponent<SpriteRenderer>();
+        //sprite = GetComponent<SpriteRenderer>();
     }
 
     private void OnEnable()
     {
+        trail.Clear();
         Move();
     }
 
@@ -42,6 +44,9 @@ public class Bullet : MonoBehaviour
         dir.z = 0;
 
         StartCoroutine(Moving(dir));
+        //rigid.velocity += (Vector2)dir * speed;
+
+        
 
     }
 
@@ -50,7 +55,9 @@ public class Bullet : MonoBehaviour
         while (true)
         {
             //transform.position += dir * speed;
-            rigid.velocity += (Vector2)dir * speed * Time.smoothDeltaTime;
+            //rigid.velocity += (Vector2)dir * speed * Time.smoothDeltaTime;
+            //rigid.velocity = (Vector2)dir * speed;
+            rigid.position+= (Vector2)dir * speed * Time.smoothDeltaTime;
             yield return null;
         }
     }

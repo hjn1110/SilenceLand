@@ -24,7 +24,7 @@ public class GameObjectPoolManager : MonoBehaviour
 
 
     //TEST
-    bool ifCreatPool = false;
+    //bool ifCreatPool = false;
 
     /*
     private void Start()
@@ -44,59 +44,8 @@ public class GameObjectPoolManager : MonoBehaviour
         //Cursor.visible = false;
     }
 
+     
     
-
-
-    private void Update()
-    {
-
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            if (!ifCreatPool)
-            {
-                Debug.Log("创建池完成");
-                CreatPool<BulletPool>("BulletPool");
-                CreatPool<SoundSpreadPool>("SoundPool");
-                ifCreatPool = true;
-            }
-            
-        }
-        if (Input.GetMouseButton(0))
-        {
-            if (ifCreatPool)
-            {
-                if (Time.frameCount % 1 == 0)//10帧检查一次状态。FPS=30时约1秒检查3次，60时则6次
-                {
-                    Vector2 MouseScrPos = Input.mousePosition;
-                    Vector2 MouseWrdPos = Camera.main.ScreenToWorldPoint(MouseScrPos);
-
-                    GetInstance("BulletPool", MouseWrdPos, 2);
-                }
-
-
-                    
-            }
-            
-           
-        }
-        
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
 
    
 
