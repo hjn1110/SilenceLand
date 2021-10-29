@@ -1,2 +1,2 @@
 # Silence
- an indie game in develop.
+ A stealth game  demo in development which is currently in early stages.
