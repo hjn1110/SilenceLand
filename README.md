@@ -7,3 +7,5 @@ The reason for starting this project was to preserve the results of another proj
 
 
 In the early demo, the effect was not as interesting as I expected, so the project is currently on hold. The updated code does not provide a playable part.
+
+![](https://github.com/onovich/SilenceLand/blob/main/Assets/Graphics/Samples/silentSample.png)
