@@ -8,7 +8,7 @@ public class SoundPoint : MonoBehaviour
     {
         if (collision.CompareTag("Enemy"))
         {
-            collision.gameObject.GetComponent<Enemy>().HearingDelayClear(transform.position);
+            collision.gameObject.GetComponent<ZombieEntity>().HearingDelayClear(transform.position);
         }
     }
 

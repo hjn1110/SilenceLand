@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public abstract class Enemy : MonoBehaviour
+public interface IZombieEntity
 {
-    public abstract void Stop();
-    public abstract Transform SeeTarget();
-    public abstract bool Hear();
-    public abstract void Follow();
-    public abstract void Seek();
-    public abstract void Patrol();
-    public abstract void ReturnToPatrol();
-    public abstract void AddSoundSourceCache(Vector3 soundSourcePos, float soundVolume);
-    public abstract void HearingDelayClear(Vector2 target);
-    public abstract IPatrolComponent patrolComponent { get; set; }
+    void Stop();
+    Transform SeeTarget();
+    bool Hear();
+    void Follow();
+    void Seek();
+    void Patrol();
+    void ReturnToPatrol();
+    void AddSoundSourceCache(Vector3 soundSourcePos, float soundVolume);
+    void HearingDelayClear(Vector2 target);
+    IPatrolComponent patrolComponent { get; set; }
 
 }
 
 
-public class ZombieEntity : Enemy
+public class ZombieEntity :MonoBehaviour, IZombieEntity
 {
     //数据层(ScritableObject)
     public MoveSetting moveSetting;
@@ -43,7 +43,7 @@ public class ZombieEntity : Enemy
     //Hear组件
     IHearComponent hearComponent;
     //Patrol组件
-    public override IPatrolComponent patrolComponent { get; set; }
+    public IPatrolComponent patrolComponent { get; set; }
     //Follow组件
     IFollowCompenent followComponent;
     //Seek组件
@@ -92,55 +92,55 @@ public class ZombieEntity : Enemy
     /// 行为层实现
     /// </summary>
     ///
-    public override void Stop()
+    public void Stop()
     {
         AIMoveComponent.Stop();
     }
 
-    public override Transform SeeTarget()
+    public Transform SeeTarget()
     {
         return seeComponent.SeeTarget();
     }
-    public override bool Hear()
+    public bool Hear()
     {
         return hearComponent.Hear();
     }
 
-    public override void AddSoundSourceCache(Vector3 soundSourcePos, float soundVolume)
+    public void AddSoundSourceCache(Vector3 soundSourcePos, float soundVolume)
     {
         hearComponent.AddSoundSourceCache(soundSourcePos, soundVolume);
     }
 
-    public override void HearingDelayClear(Vector2 target)
+    public void HearingDelayClear(Vector2 target)
     {
         hearComponent.HearingDelayClear(target);
 
     }
     /*
-    public override void SetNextTarget(PathNods nod)
+    public void SetNextTarget(PathNods nod)
     {
         patrolComponent.SetNextTarget(nod);
     }
     */
-    public override void Follow()
+    public void Follow()
     {
         if (seeComponent.SeeTarget() != null)
         {
             followComponent.Follow(seeComponent.SeeTarget());
         }
     }
-    public override void Seek()
+    public void Seek()
     {
         if (hearComponent.Hear())
         {
             seekComponent.Seek(hearComponent.HearTarget);
         }
     }
-    public override void Patrol()
+    public void Patrol()
     {
         patrolComponent.Patrol();
     }
-    public override void ReturnToPatrol()
+    public void ReturnToPatrol()
     {
         patrolComponent.Return();
     }

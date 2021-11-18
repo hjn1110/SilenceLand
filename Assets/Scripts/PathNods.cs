@@ -37,7 +37,7 @@ public class PathNods : MonoBehaviour
 
         if (collision.CompareTag("Enemy"))
         {
-            IPatrolComponentEditor patrolComponentEditor = (IPatrolComponentEditor)collision.GetComponent<Enemy>().patrolComponent;
+            IPatrolComponentEditor patrolComponentEditor = (IPatrolComponentEditor)collision.GetComponent<ZombieEntity>().patrolComponent;
 
             if (patrolComponentEditor.thePatrolTarget == transform.position)
                 patrolComponentEditor.SetNextTarget(this);
